@@ -7,6 +7,7 @@
 You may be wondering...how do I run this amazing app?
 Well, it's easy.
 
+```
 SSIApp -d | -r [-dir <DIRECTORY>] [-h] -k <NUMBER> [-n <NUMBER>]  -s <IMAGE>
 
  -d,--distribute                Distribute a source image into other shadow images
@@ -21,5 +22,6 @@ SSIApp -d | -r [-dir <DIRECTORY>] [-h] -k <NUMBER> [-n <NUMBER>]  -s <IMAGE>
  -r,--recover                   Recover a secret image from k source images
  -s,--secret <IMAGE>            Either source image to distribute (in case you have chosen the
                                 option (d)) or recovered image (in case they are chosen option (-r))
+```
 
 All rights reserved
