@@ -1,12 +1,14 @@
-package ar.edu.itba.cys.ssi.execution;
+package ar.edu.itba.cys.ssi.execution.distribute;
 
 import java.awt.Image;
+
+import ar.edu.itba.cys.ssi.execution.ExecutionMode;
 
 public class Distribute implements ExecutionMode {
 
 	private final int k;
 	private final int n;
-	private final String image; // TODO change this when we know what we actually need
+	private final String image;
 	
 	public Distribute(final int k, final int n, final String image) {
 		this.k = k;
