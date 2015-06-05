@@ -23,7 +23,8 @@ public final class SSICmdParser {
 	public SSICmdExecutionParameters parse(final String[] cmdLine) {
 		setOptions();
 		// Parse command line parameters
-		String image = null, k = null, dir = null, n = null;
+		String image = null, dir = null;
+		int k = -1, n = -1;
 		SSIExecutionMode mode = SSIExecutionMode.RECOVER;
 		try {
 			final CommandLine cmd = parser.parse(options, cmdLine);
@@ -95,11 +96,11 @@ public final class SSICmdParser {
 				.create("h"));
 	}
 
-	private String parseN(final CommandLine cmd) {
+	private int parseN(final CommandLine cmd) {
 		if (cmd.hasOption('n')) {
-			return cmd.getOptionValue('n');
+			return Integer.valueOf(cmd.getOptionValue('n'));
 		}
-		return null;
+		return -1;
 	}
 
 	private String parseDir(final CommandLine cmd) {
@@ -116,11 +117,11 @@ public final class SSICmdParser {
 		return cmd.getOptionValue('s');
 	}
 
-	private String parseK(final CommandLine cmd) {
+	private int parseK(final CommandLine cmd) {
 		if (!cmd.hasOption('k')) {
 			printHelp(this.options);
 		}
-		return cmd.getOptionValue('k');
+		return Integer.valueOf(cmd.getOptionValue('k'));
 	}
 
 	private void printHelp(final Options options) {
@@ -134,11 +135,12 @@ public final class SSICmdParser {
 	}
 
 	public final class SSICmdExecutionParameters {
-		final String image, k, dir, n;
+		final String image, dir;
+		final int k, n;
 		final SSIExecutionMode mode;
 
-		private SSICmdExecutionParameters(final String image, final String k,
-				final String dir, final String n, final SSIExecutionMode mode) {
+		private SSICmdExecutionParameters(final String image, final int k,
+				final String dir, final int n, final SSIExecutionMode mode) {
 			this.image = image;
 			this.k = k;
 			this.dir = dir;
@@ -150,7 +152,7 @@ public final class SSICmdParser {
 			return this.image;
 		}
 
-		public String getK() {
+		public int getK() {
 			return this.k;
 		}
 
@@ -158,7 +160,7 @@ public final class SSICmdParser {
 			return this.dir;
 		}
 
-		public String getN() {
+		public int getN() {
 			return this.n;
 		}
 
