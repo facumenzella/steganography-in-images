@@ -6,7 +6,6 @@ import ar.edu.itba.cys.ssi.execution.distribute.Distribute.DistributionParameter
 import ar.edu.itba.cys.ssi.parser.SSICmdParser;
 import ar.edu.itba.cys.ssi.parser.SSICmdParser.SSICmdExecutionParameters;
 
-
 // Steganography in images App
 public class SIIApp {
 	
@@ -14,7 +13,7 @@ public class SIIApp {
 		SSICmdParser parser = new SSICmdParser();
 		
 		SSICmdExecutionParameters parameters = parser.parse(args);
-		ExecutionMode mode;
+		ExecutionMode mode = null;
 		switch (parameters.getMode()) {
 		case RECOVER:
 			// We are recovering an image
@@ -24,12 +23,12 @@ public class SIIApp {
 			// We are distributing an image
 			DistributionParameters p = new DistributionParameters(parameters);
 			mode = new Distribute(p);
-			mode.execute();
 			break;
 		default:
 			System.out.println("Holy shit the impossible hapenned");
 			break;
 		}
+		mode.execute();
 	}
 
 }
