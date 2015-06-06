@@ -4,7 +4,6 @@ import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
@@ -31,12 +30,15 @@ public final class SSICmdParser {
 			if (cmd.hasOption('h')) {
 				printHelp(options);
 			}
+			if (cmd.hasOption('n') && !cmd.hasOption('d')) {
+				throw new IllegalArgumentException("You can only use n parameters in distribution mode");
+			}
 			image = parseSecret(cmd);
 			k = parseK(cmd);
 			dir = parseDir(cmd);
-			n = parseN(cmd);
 			if (cmd.hasOption('d')) {
 				// We are going to distribute an image
+				n = parseN(cmd);
 				mode = SSIExecutionMode.DISTRIBUTE;
 			} else if (cmd.hasOption('r')) {
 				// We are going to recover an image
