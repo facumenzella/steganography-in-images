@@ -1,5 +1,7 @@
 package ar.edu.itba.cys.ssi.execution.distribute;
 
+import ar.edu.itba.cys.ssi.execution.BitMapParser;
+import ar.edu.itba.cys.ssi.execution.BitMapParser.BMPImageInformation;
 import ar.edu.itba.cys.ssi.execution.ExecutionMode;
 import ar.edu.itba.cys.ssi.parser.SSICmdParser.SSICmdExecutionParameters;
 
@@ -17,7 +19,8 @@ public class Distribute implements ExecutionMode {
 	
 	@Override
 	public void execute() {
-		
+		BitMapParser bmpParser = new BitMapParser();
+		BMPImageInformation bmpInfo = bmpParser.parseImage(this.image);
 	}
 	
 	public static class DistributionParameters {

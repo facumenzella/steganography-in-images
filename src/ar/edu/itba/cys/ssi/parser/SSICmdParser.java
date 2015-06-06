@@ -55,6 +55,7 @@ public final class SSICmdParser {
 
 	@SuppressWarnings("static-access")
 	private void setOptions() {
+		// TODO n is dependant of d. Do not know how to do that.
 		OptionGroup mode = new OptionGroup();
 		mode.setRequired(true);
 	
