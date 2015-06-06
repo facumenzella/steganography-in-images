@@ -86,6 +86,10 @@ public class BitMapParser {
 			this.image = image;
 		}
 
+		public byte[] getImage() {
+			return image;
+		}
+		
 	}
 
 }
