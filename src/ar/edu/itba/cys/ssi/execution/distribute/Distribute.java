@@ -1,5 +1,6 @@
 package ar.edu.itba.cys.ssi.execution.distribute;
 
+import java.io.File;
 import java.util.Random;
 
 import ar.edu.itba.cys.ssi.execution.BitMapParser;
@@ -47,7 +48,13 @@ public class Distribute implements ExecutionMode {
 		public DistributionParameters(final SSICmdExecutionParameters parameters) {
 			this.k = parameters.getK();
 			this.secretImage = parameters.getImage();
-			this.numberOfShadows = parameters.getN();
+			int n = parameters.getN();
+			if (n == -1) {
+				// TODO set path to folder
+				this.numberOfShadows = new File("/path/to/folder").listFiles().length;
+			} else {
+				this.numberOfShadows = n;
+			}
 			validate();
 		}
 		
@@ -58,6 +65,7 @@ public class Distribute implements ExecutionMode {
 			} else if (k > numberOfShadows) {
 				msg = "k must be lower or equal than n";
 			} else if (numberOfShadows < 2) {
+				// TODO if n is not provided we need to set it 
 				msg = "n must be at least 2";
 			} 
 			// TODO validate Image formatt
