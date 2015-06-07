@@ -5,9 +5,8 @@
 int
 main(int argc, char * argv[]) {
 
-  mode_type mode;
   parameters_error error = calloc(1024, sizeof(char));
-  validateParameters(argc, argv, &mode, &error);
+  Parameters parameters = validateParameters(argc, argv, &error);
 
   handleErrorIfNeeded(error);
 

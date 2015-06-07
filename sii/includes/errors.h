@@ -11,6 +11,7 @@
 
 static const char QTY_ARGS_ERROR[] = "You have to provided the wrong amount of parameters";
 static const char MODE_ARG_ERROR[] = "You have to provide either discover or recover mode";
+static const char SECRET_ARG_ERROR[] = "You have to provide a secret image";
 
 typedef char* parameters_error;
 typedef parameters_error error;

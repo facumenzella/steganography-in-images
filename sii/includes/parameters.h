@@ -5,11 +5,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "../includes/errors.h"
 
-#define MIN 3
-#define MAX 5
+#define MIN_ARGS 5
+#define MAX_ARGS 9
+#define SECRET_MAX_LENGTH 30
+
+#define MODE(s) (strcmp(s, "-d") == 0) ? "distribution" : (strcmp(s, "-r") == 0) ? "recover" : "invalid mode"
+
+typedef struct parameters_t *Parameters;
 
 typedef enum {
   DISTRIBUTE, RECOVER
@@ -20,8 +26,10 @@ static const char DISTRIBUTE_ARG[] = "--distribute";
 static const char S_DISTRIBUTE_ARG[] = "-d"; // short distribute
 static const char RECOVER_ARG[] = "--recover";
 static const char S_RECOVER_ARG[] = "-r";
+static const char SECRET_ARG[] = "--secret";
+static const char S_SECRET_ARG[] = "-s";
 
 // functions
-void validateParameters(int argc, char * argv[], mode_type *m, parameters_error *error);
+Parameters validateParameters(int argc, char * argv[], parameters_error *error);
 
 #endif
