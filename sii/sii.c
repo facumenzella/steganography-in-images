@@ -7,9 +7,11 @@ main(int argc, char * argv[]) {
 
   mode_type mode;
   parameters_error error;
-  validateParaemeters(argc, argv, &mode, &error);
+  validateParameters(argc, argv, &mode, &error);
 
   handleErrorIfNeeded(error);
+
+
 }
 
 
