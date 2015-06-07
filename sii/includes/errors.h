@@ -15,8 +15,6 @@ static const char SECRET_ARG_ERROR[] = "You have to provide a secret image";
 static const char K_ARG_ERROR[] = "You have to provide a minimum number of shadows";
 
 typedef char* parameters_error;
-typedef parameters_error error;
-
-void handleError(error err);
+typedef char* distribution_error;
 
 #endif

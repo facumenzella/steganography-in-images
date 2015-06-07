@@ -29,7 +29,7 @@ main(int argc, char * argv[]) {
 
 int
 handleErrorIfNeeded(parameters_error error) {
-  handleError(error); // it prints if we are debugging
+  d_printf("%s\n", error);
   if (error) {
     return -1;
   }
