@@ -8,6 +8,7 @@ static const int IMAGE_SIZE_OFFSET = 34;
 void readFileSize(FILE *file, int *fileSize);
 void readImageOffset(FILE *file, int *imageOffset);
 void readImageSize(FILE *file, int *imageSize);
+void readHeader(FILE *file, BYTE *header, int headerSize);
 void readImage(FILE *file, int imageOffset, int imageSize, BYTE *image, io_error *err);
 
 BMPImage
@@ -22,18 +23,18 @@ loadImage(char *path, io_error *err) {
 	}
 
   readFileSize(file, &fileSize);
-  d_printf("file size: %d\n", fileSize);
+  d_printf("\tfile size: %d\n", fileSize);
   readImageOffset(file, &imageOffset);
-  d_printf("image offset: %d\n", imageOffset);
+  d_printf("\timage offset: %d\n", imageOffset);
   readImageSize(file, &imageSize);
-  d_printf("image size: %d\n", imageSize);
+  d_printf("\timage size: %d\n", imageSize);
 
   BYTE *header = calloc(imageOffset + 1, sizeof(BYTE));
   if (header == NULL) {
 		strcpy(*err, CALLOC_ERROR);
 		return NULL;
 	}
-  fread(header, sizeof(BYTE), imageOffset, file);
+  readHeader(file, header, imageOffset);
 
   BYTE *image = calloc(imageSize + 1, sizeof(BYTE));
   if (image == NULL) {
@@ -63,6 +64,13 @@ void
 readImageSize(FILE *file, int *imageSize) {
   fseek(file, IMAGE_SIZE_OFFSET, SEEK_SET);
 	fread(imageSize, sizeof(int), 1, file);
+  rewind(file);
+}
+
+void
+readHeader(FILE *file, BYTE *header, int headerSize) {
+  fseek(file, headerSize, SEEK_SET);
+  fread(header, sizeof(BYTE), headerSize, file);
   rewind(file);
 }
 
