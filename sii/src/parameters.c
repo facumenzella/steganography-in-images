@@ -2,17 +2,17 @@
 #include "../includes/constants.h"
 #include "../includes/env.h"
 
-#define MODE(s) (s == "-d") ? "distribution" : ((s == "-r") ? "recover" : "invalid mode")
+#define MODE(s) (strcmp(s, "-d") == 0) ? "distribution" : (strcmp(s, "-r") == 0) ? "recover" : "invalid mode"
 
 void validateModeType(char* arg, mode_type* mode, parameters_error *error);
 
 void
 validateParameters(int argc, char * argv[], mode_type *m, parameters_error *error) {
 
-  if(argc < MIN || argc > MAX) {
-    strcpy(*error, QTY_ARGS_ERROR);
-    return;
-	}
+  // if(argc < MIN || argc > MAX) {
+  //   strcpy(*error, QTY_ARGS_ERROR);
+  //   return;
+	// }
 
   validateModeType(argv[1], m, error);
 }

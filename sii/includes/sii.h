@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "./parameters.h"
+#include "./errors.h"
 
 int handleErrorIfNeeded(parameters_error error);
 

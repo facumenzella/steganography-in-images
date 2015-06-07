@@ -1,5 +1,4 @@
-#include "../includes/error.h"
-#include "../includes/error.h"
+#include "../includes/errors.h"
 
 void
 handleError(error err) {

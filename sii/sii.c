@@ -17,9 +17,8 @@ main(int argc, char * argv[]) {
 
 int
 handleErrorIfNeeded(parameters_error error) {
+  handleError(error); // it prints if we are debugging
   if (error) {
-    printf("%s\n", error);
-    // TODO print help
     return -1;
   }
   return 0;
