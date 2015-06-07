@@ -14,20 +14,27 @@ public class Distribute implements ExecutionMode {
 	private final static Random generator = new Random(SEED); // I am sure this is wrong.
 	private final int k;
 	private final int n;
-	private final String image;
+	private final String image_name;
+	private static final byte MAX_BYTE_VALUE = (byte) 251;
 	
 	public Distribute(final DistributionParameters parameters) {
 		this.k = parameters.getK();
 		this.n = parameters.getNumberOfShadows();
-		this.image = parameters.getSecretImage();
+		this.image_name = parameters.getSecretImage();
 	}
 	
 	@Override
 	public void execute() {
 		BitMapParser bmpParser = new BitMapParser();
-		BMPImageInformation bmpInfo = bmpParser.parseImage(this.image);
-		permutatePixels(n, bmpInfo.getImage());
-		
+		BMPImageInformation bmpInfo = bmpParser.parseImage(this.image_name);
+		byte[] image = bmpInfo.getImage();
+		permutatePixels(n, image);
+		byte[][] shadows = createLosslessShadows(image, n, k);
+		for (int i = 0; i < shadows.length; i++) {
+			for (int j = 0; j < shadows[i].length; j++) {
+				System.out.println(shadows[i][j]);
+			}
+		}
 	}
 	
 	private void permutatePixels(final int n, final byte[] image) {
@@ -37,6 +44,39 @@ public class Distribute implements ExecutionMode {
 			image[i] = image[j];
 			image[j] = pivot;
 		}
+	}
+	
+	private byte[][] createLosslessShadows(byte[] image, int n, int k) {
+		byte[][] shadows = new byte[n][image.length/k * 2];
+		byte[] section = new byte[k];
+		int shadow_pixel_index = 0;
+		for (int i = 0; i < image.length; i++) {
+			if (i % k == 0) {
+				evaluateSection(section, shadows, shadow_pixel_index);
+				shadow_pixel_index++;
+				section = new byte[k];
+			}
+			section[i % k] = image[i];
+		}
+		return shadows;
+	}
+	
+	private void evaluateSection(byte[] section, byte[][] shadows, int shadow_pixel_index) {
+		for (int i = 1; i <= shadows.length; i++) {
+			byte ans = 0;
+			for (int j = 0; j < section.length; j++) {
+				ans += section[j]*bytePow(i, j);
+			}
+			shadows[i-1][shadow_pixel_index] = (byte)(ans % MAX_BYTE_VALUE);
+		}
+	}
+	
+	private byte bytePow(int base, int exponent) {
+		byte ans = 1;
+		for (int i = 0; i < exponent; i++) {
+			ans *= base;
+		}
+		return ans;
 	}
 	
 	public static class DistributionParameters {
