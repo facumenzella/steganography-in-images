@@ -6,7 +6,7 @@ int
 main(int argc, char * argv[]) {
 
   mode_type mode;
-  parameters_error error;
+  parameters_error error = calloc(1024, sizeof(char));
   validateParameters(argc, argv, &mode, &error);
 
   handleErrorIfNeeded(error);
@@ -17,7 +17,10 @@ main(int argc, char * argv[]) {
 
 int
 handleErrorIfNeeded(parameters_error error) {
-  printf("%s\n", error);
-  // TODO print help
-  return -1;
+  if (error) {
+    printf("%s\n", error);
+    // TODO print help
+    return -1;
+  }
+  return 0;
 }

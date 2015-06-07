@@ -3,4 +3,10 @@
 
 static const char QTY_ARGS_ERROR[] = "You have to provided the wrong amount of parameters";
 static const char MODE_ARG_ERROR[] = "You have to provide either discover or recover mode";
+
+typedef char* parameters_error;
+typedef parameters_error error;
+
+void handleError(error err);
+
 #endif

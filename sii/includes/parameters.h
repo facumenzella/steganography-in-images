@@ -6,14 +6,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../includes/errors.h"
+
 #define MIN 3
 #define MAX 5
 
 typedef enum {
   DISTRIBUTE, RECOVER
 } mode_type;
-
-typedef char* parameters_error;
 
 // console parameters
 static const char DISTRIBUTE_ARG[] = "--distribute";
