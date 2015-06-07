@@ -16,7 +16,7 @@ main(int argc, char * argv[]) {
   switch (getMode(parameters)) {
     case DISTRIBUTE:
     d_printf("%s\n", DISTRIBUTE_WELCOME_MSG);
-
+    distribute(parameters);
     break;
     case RECOVER:
     d_printf("%s\n", RECOVER_WELCOME_MSG);
