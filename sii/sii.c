@@ -1,6 +1,5 @@
 // includes
 #include "./includes/sii.h"
-#include "./includes/constants.h"
 
 int
 main(int argc, char * argv[]) {
@@ -9,7 +8,6 @@ main(int argc, char * argv[]) {
   Parameters parameters = validateParameters(argc, argv, &error);
 
   handleErrorIfNeeded(error);
-
 
 }
 

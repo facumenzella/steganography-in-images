@@ -5,6 +5,7 @@ typedef unsigned char BYTE;
 #define MAX_BYTE_VALUE 251
 
 #ifndef BOOLEAN
+typedef int boolean;
 #define TRUE 1
 #define FALSE !TRUE
 #endif

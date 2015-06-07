@@ -1,25 +1,29 @@
 #include "../includes/parameters.h"
-#include "../includes/constants.h"
-#include "../includes/env.h"
 
 typedef struct parameters_t {
 	mode_type mode;
 	char *secret;
   char *minShadows;
+  char *totalShadows;
+  char *directory;
 }parameters_t;
 
+boolean invalidAmountOfArgs(int args);
 void validateModeType(char *arg, mode_type *mode, parameters_error *error);
 void validateSecret(char *arg, char *value,  char **secret, parameters_error *error);
 void validateMinShadows(char *arg, char*value, char **number, parameters_error *error);
+boolean validateTotalAmountOfShadows(char *arg, char*value, char **number, parameters_error *error);
+void validateDir(char *arg, char*value, char **number, parameters_error *error);
+boolean haveOptionalArguments(int argc, int lastReaded);
 
 Parameters
 validateParameters(int argc, char *argv[], parameters_error *error) {
   Parameters parameters = malloc(sizeof(struct parameters_t));
-
-  // if(argc < MIN_ARGS || argc > MAX_ARGS) {
-  //   strcpy(*error, QTY_ARGS_ERROR);
-  //   return NULL;
-	// }
+  int ARGS = argc - 1; // we do not need the first argument
+  if(invalidAmountOfArgs(ARGS)) {
+    strcpy(*error, QTY_ARGS_ERROR);
+    return NULL;
+	}
 
   if (DEBUGGING) {
     printf("\n%s\n", "Starting to read console arguments...");
@@ -28,11 +32,35 @@ validateParameters(int argc, char *argv[], parameters_error *error) {
   validateModeType(argv[1], &parameters->mode, error);
   validateSecret(argv[2], argv[3], &parameters->secret, error);
   validateMinShadows(argv[4], argv[5], &parameters->minShadows, error);
-  if (DEBUGGING) {
-    printf("%s\n", "Starting to read optional console arguments...");
+
+  if (haveOptionalArguments(ARGS, 5)) {
+    if (DEBUGGING) {
+      printf("%s\n", "Starting to read optional console arguments...");
+    }
+    if (parameters->mode == DISTRIBUTE) {
+      // We need to check for n argument
+      boolean nWasProvided = validateTotalAmountOfShadows(argv[6], argv[7], &parameters->totalShadows, error);
+      if (nWasProvided && haveOptionalArguments(ARGS, 7)) {
+        validateDir(argv[8], argv[9], &parameters->directory, error);
+      } else {
+        validateDir(argv[6], argv[7], &parameters->directory, error);
+      }
+    }
   }
+
+
   return parameters;
 }
+
+boolean
+invalidAmountOfArgs(int args) {
+  boolean even = (args % 2 == 0) ? TRUE : FALSE;
+  if (args < MIN_REQUIRED_ARGS || args > MAX_ARGS || even) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
 
 void
 validateModeType(char *arg, mode_type *mode, parameters_error *error) {
@@ -55,11 +83,11 @@ validateSecret(char *arg, char *value,  char **secret, parameters_error *error) 
     char *s = calloc(SECRET_MAX_LENGTH, sizeof(char));
     strcpy(s, value);
     *secret = s;
+    if (DEBUGGING) {
+      printf("Secret: %s\n", *secret);
+    }
   } else {
     strcpy(*error, SECRET_ARG_ERROR);
-  }
-  if (DEBUGGING) {
-    printf("Secret: %s\n", *secret);
   }
 }
 
@@ -69,10 +97,51 @@ validateMinShadows(char *arg, char*value, char **number, parameters_error *error
     char *s = calloc(K_MAX_LENGTH, sizeof(char));
     strcpy(s, value);
     *number = s;
+    if (DEBUGGING) {
+      printf("Min shadows: %s\n", *number);
+    }
   } else {
     strcpy(*error, K_ARG_ERROR);
   }
-  if (DEBUGGING) {
-    printf("Min shadows: %s\n", *number);
+}
+
+boolean
+validateTotalAmountOfShadows(char *arg, char*value, char **number, parameters_error *error) {
+  if(strcmp(arg, S_N_ARG) == 0 || strcmp(arg, N_ARG) == 0) {
+    char *s = calloc(N_MAX_LENGTH, sizeof(char));
+    strcpy(s, value);
+    *number = s;
+    if (DEBUGGING) {
+      printf("Total shadows: %s\n", *number);
+    }
+    return TRUE;
+  }
+  return FALSE;
+}
+
+void
+validateDir(char *arg, char*value, char **number, parameters_error *error) {
+  if(strcmp(arg, S_DIR_ARG) == 0 || strcmp(arg, DIR_ARG) == 0) {
+    char *s = calloc(DIR_MAX_LENGTH, sizeof(char));
+    strcpy(s, value);
+    *number = s;
+    if (DEBUGGING) {
+      printf("Directory: %s\n", *number);
+    }
   }
 }
+
+boolean
+haveOptionalArguments(int argc, int lastReaded) {
+  if (argc > lastReaded) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// Parameters structure functions
+mode_type getMode(Parameters p) { return p->mode; }
+char *getSecret(Parameters p) { return p->secret; }
+char *getMinShadows(Parameters p) { return p->minShadows; }
+char *getTotalShadows(Parameters p) { return p-> totalShadows; }
+char *getDirectory(Parameters p) { return p->directory; }

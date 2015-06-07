@@ -8,6 +8,8 @@
 
 #include "./parameters.h"
 #include "./errors.h"
+#include "./constants.h"
+
 
 int handleErrorIfNeeded(parameters_error error);
 
