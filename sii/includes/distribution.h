@@ -3,6 +3,8 @@
 
 #include "./parameters.h"
 #include "./constants.h"
+#include "./image.h"
+#include "./imageUtils.h"
 
 void distribute(Parameters parameters);
 
