@@ -1,6 +1,7 @@
 #include "../../includes/imageUtils.h"
 
 static const char READ_BINARY_MODE[] = "rb";
+static const char WRITE_BINARY_MODE[] = "wb";
 static const int FILE_SIZE_OFFSET = 2;
 static const int IMAGE_OFFSET_OFFSET = 10; // Pretty cool name, a I right?
 static const int IMAGE_SIZE_OFFSET = 34;
@@ -49,6 +50,24 @@ loadImage(char *path, io_error *err) {
 	}
   readImage(file, imageOffset, imageSize, image, err);
   return initBMPImage(path, fileSize, imageOffset, header, image, err);
+}
+
+void
+saveImage(BMPImage image, char *path, io_error *err) {
+  int offset = getOffset(image);
+	int fileSize = getFilesize(image);
+	FILE * file;
+
+	file = fopen(path, WRITE_BINARY_MODE);
+	if(file == NULL) {
+		strcpy(*err, COULD_NOT_OPEN_FILE_ERROR);
+    return;
+	}
+
+	fwrite(getHeader(image), sizeof(BYTE), offset, file);
+	fwrite(getBMPImage(image), sizeof(BYTE), fileSize - offset, file);
+
+	fclose(file);
 }
 
 void
