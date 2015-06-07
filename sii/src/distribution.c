@@ -1,6 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "../includes/constants.h"
+
+
+void
+distribute(Parameters *parameters) {
+	
+}
 
 void
 permutePixels(int n, BYTE[] image) {

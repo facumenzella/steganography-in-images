@@ -7,9 +7,9 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "../includes/errors.h"
-#include "../includes/constants.h"
-#include "../includes/env.h"
+#include "./errors.h"
+#include "./constants.h"
+#include "./env.h"
 
 #define MIN_REQUIRED_ARGS 5
 #define MAX_ARGS 9
