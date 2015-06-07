@@ -5,22 +5,32 @@
 typedef struct parameters_t {
 	mode_type mode;
 	char *secret;
+  char *minShadows;
 }parameters_t;
 
 void validateModeType(char *arg, mode_type *mode, parameters_error *error);
 void validateSecret(char *arg, char *value,  char **secret, parameters_error *error);
+void validateMinShadows(char *arg, char*value, char **number, parameters_error *error);
 
 Parameters
 validateParameters(int argc, char *argv[], parameters_error *error) {
   Parameters parameters = malloc(sizeof(struct parameters_t));
 
-  if(argc < MIN_ARGS || argc > MAX_ARGS) {
-    strcpy(*error, QTY_ARGS_ERROR);
-    return NULL;
-	}
+  // if(argc < MIN_ARGS || argc > MAX_ARGS) {
+  //   strcpy(*error, QTY_ARGS_ERROR);
+  //   return NULL;
+	// }
+
+  if (DEBUGGING) {
+    printf("\n%s\n", "Starting to read console arguments...");
+  }
 
   validateModeType(argv[1], &parameters->mode, error);
-  validateSecret(argv[2], argv[3], &parameters->secret,error);
+  validateSecret(argv[2], argv[3], &parameters->secret, error);
+  validateMinShadows(argv[4], argv[5], &parameters->minShadows, error);
+  if (DEBUGGING) {
+    printf("%s\n", "Starting to read optional console arguments...");
+  }
   return parameters;
 }
 
@@ -34,7 +44,7 @@ validateModeType(char *arg, mode_type *mode, parameters_error *error) {
     strcpy(*error, MODE_ARG_ERROR);
 	}
   if (DEBUGGING) {
-    printf("mode: %s\n", MODE(arg));
+    printf("Mode: %s\n", MODE(arg));
   }
 }
 
@@ -49,6 +59,20 @@ validateSecret(char *arg, char *value,  char **secret, parameters_error *error) 
     strcpy(*error, SECRET_ARG_ERROR);
   }
   if (DEBUGGING) {
-    printf("secret: %s\n", *secret);
+    printf("Secret: %s\n", *secret);
+  }
+}
+
+void
+validateMinShadows(char *arg, char*value, char **number, parameters_error *error) {
+  if(strcmp(arg, S_K_ARG) == 0 || strcmp(arg, K_ARG) == 0) {
+    char *s = calloc(K_MAX_LENGTH, sizeof(char));
+    strcpy(s, value);
+    *number = s;
+  } else {
+    strcpy(*error, K_ARG_ERROR);
+  }
+  if (DEBUGGING) {
+    printf("Min shadows: %s\n", *number);
   }
 }
