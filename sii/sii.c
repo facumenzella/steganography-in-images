@@ -1,5 +1,9 @@
-// includes
 #include "./includes/sii.h"
+
+static const char DISTRIBUTE_WELCOME_MSG[] = "You have chosen Distribution mode...";
+static const char RECOVER_WELCOME_MSG[] = "You have chosen Recover mode...";
+
+int handleErrorIfNeeded(parameters_error error);
 
 int
 main(int argc, char * argv[]) {
@@ -8,6 +12,17 @@ main(int argc, char * argv[]) {
   Parameters parameters = validateParameters(argc, argv, &error);
 
   handleErrorIfNeeded(error);
+
+  switch (getMode(parameters)) {
+    case DISTRIBUTE:
+    d_printf("%s\n", DISTRIBUTE_WELCOME_MSG);
+
+    break;
+    case RECOVER:
+    d_printf("%s\n", RECOVER_WELCOME_MSG);
+
+    break;
+  }
 
 }
 
