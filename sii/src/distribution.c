@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "../includes/distribution.h"
+#include "../includes/math.h"
 
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size);
 void permutePixels(int n, BYTE* image);
@@ -98,16 +99,6 @@ evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, in
 		}
 		shadows[i-1][shadow_pixel_index] = ans%MAX_BYTE_VALUE;
 	}
-}
-
-BYTE
-bytePow(BYTE base, int exponent) {
-	BYTE ans = 1;
-	int i;
-	for (i = 0; i < exponent; i++) {
-		ans *= base;
-	}
-	return ans;
 }
 
 BYTE **

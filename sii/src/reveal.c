@@ -1,9 +1,10 @@
 #include <stdlib.h>
 #include "../includes/constants.h"
+#include "../includes/math.h"
 
 BYTE* lagrangeInterpolation(int* n_values, int n_size, int k, BYTE* shadows_pixel);
 BYTE** declareEquations(int k);
-BYTE** initializeEquations(BYTE** equations, int n, int k);
+void initializeEquations(BYTE** equations, int* n_values, int n_size, int k);
 BYTE** pixelCoefficients(BYTE** equations, int dimension);
 BYTE* divideRowBy(BYTE* row, int row_size, BYTE value);
 BYTE multiplicativeInverse(BYTE number);
@@ -31,7 +32,7 @@ BYTE*
 lagrangeInterpolation(int* n_values, int n_size, int k, BYTE* shadows_pixel) {
 	BYTE* partial_image_section_pixels = calloc(k, sizeof(BYTE));
 	BYTE** equations = declareEquations(k);
-	initializeEquations(equations, n_size, k);
+	initializeEquations(equations, n_values, n_size, k);
 
 	return partial_image_section_pixels;
 }
@@ -46,12 +47,12 @@ declareEquations(int k) {
 	return equations;
 }
 
-BYTE**
-initializeEquations(BYTE** equations, int n, int k) {
+void
+initializeEquations(BYTE** equations, int* n_values, int n_size, int k) {
 	int i, j;
 	for (i = 0; i < k; i++) {
 		for (j = 0; j < k; j++) {
-			
+			equations[i][j] = intPow(n_values[i], k - j - 1);
 		}
 	}
 }
@@ -87,7 +88,7 @@ pixelCoefficients(BYTE** equations, int dimension) { //AKA: Matrix inversion
 
 BYTE*
 divideRowBy(BYTE* row, int row_size, BYTE value) {
-	multiplyRowBy(row, row_size, multiplicativeInverse(value));
+	return multiplyRowBy(row, row_size, multiplicativeInverse(value));
 }
 
 // bytePow() está en distribution.c. Quizás haya que extraer el código a una librería más general.
