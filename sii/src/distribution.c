@@ -10,12 +10,8 @@ void
 distribute(Parameters parameters) {
 	io_error err = calloc(1024, sizeof(char));
 	BMPImage image = loadImage("../img/Albert.bmp", &err);
-
-	if (err) {
-		d_printf("%s\n", "We fucked up");
-	} else {
-		d_printf("file name: %s\n", getFilename(image));
-	}
+	saveImage(image, "../img/Albert2.bmp", &err);
+	
 }
 
 void

@@ -11,9 +11,10 @@
 
 typedef struct image_t * BMPImage;
 
-BMPImage initBMPImage(char *filename, int fileSize, int offset, BYTE *header, BYTE *image, image_error *error);
+BMPImage initBMPImage(char *filename, int fileSize, int offset, int imageSize, BYTE *header, BYTE *image, image_error *error);
 int getFilesize(BMPImage image);
 int getOffset(BMPImage image);
+int getImageSize(BMPImage size);
 BYTE *getHeader(BMPImage image);
 BYTE *getBMPImage(BMPImage image);
 char *getFilename(BMPImage image);
