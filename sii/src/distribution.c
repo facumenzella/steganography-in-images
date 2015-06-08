@@ -13,18 +13,28 @@ distribute(Parameters parameters, main_error *err) {
 	char *file_name = getSecret(parameters);
 	BMPImage bmp = loadImage(file_name, err);
 	BYTE *image = getBMPImage(bmp);
+	int image_size = getImageSize(bmp);
+	int n = getTotalShadows(parameters);
+	int k = getMinShadows(parameters);
 
-/* step 1 - Truncate all gray values larger than 250 to 250 so that the gray
-values of the secret image are in the range 0–250
-*/
-
-	BYTE *t_image = convertImageToArrayWithoutLoss(image, getImageSize(bmp));
-
-/* step 2 - Use a key to generate a permutation sequence to permute the pixels
+/* step 1 - Use a key to generate a permutation sequence to permute the pixels
 of the secret image.
 */
-	int n = getTotalShadows(parameters);
 	permutePixels(n, image);
+
+	/* step 2 - Sequentially read in gray values of D* and then store in E according to the rule below.
+	For each read-in gray value pi of D* :
+		2.1. If pio250; then store pi in E:
+		2.2. If piX250; then split pi into two values 250 and (pi - 250).
+		Store these two values in E (first 250, then pi - 250).
+	*/
+	BYTE *E = convertImageToArrayWithoutLoss(image, image_size);
+
+	// step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
+	// step 4 - Generate n pixels for the n shadow images.
+	// step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
+	BYTE **shadows = createLosslessShadows(E, image_size, n, k);
+
 }
 
 BYTE*

@@ -47,6 +47,10 @@ static const char S_N_ARG[] = "-n";
 static const char DIR_ARG[] = "-directory";
 static const char S_DIR_ARG[] = "-dir";
 
+// default values
+static const char DIRECTORY_DEFAULT_VALUE[] = "./";
+
+
 // functions
 Parameters validateParameters(int argc, char * argv[], parameters_error *error);
 

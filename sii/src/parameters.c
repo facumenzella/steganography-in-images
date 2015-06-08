@@ -13,7 +13,8 @@ void validateModeType(char *arg, mode_type *mode, parameters_error *error);
 void validateSecret(char *arg, char *value,  char **secret, parameters_error *error);
 void validateMinShadows(char *arg, char*value, char **number, parameters_error *error);
 boolean validateTotalAmountOfShadows(char *arg, char*value, char **number, parameters_error *error);
-void validateDir(char *arg, char*value, char **number, parameters_error *error);
+void setDefaultDir(char **dir);
+void validateDir(char *arg, char*value, char **dir, parameters_error *error);
 boolean haveOptionalArguments(int argc, int lastReaded);
 
 Parameters
@@ -24,6 +25,8 @@ validateParameters(int argc, char *argv[], parameters_error *error) {
 		setError(error, QTY_ARGS_ERROR);
     return NULL;
 	}
+
+	setDefaultDir(&parameters->directory);
 
   if (DEBUGGING) {
     printf("\n%s\n", "Starting to read console arguments...");
@@ -110,12 +113,20 @@ validateTotalAmountOfShadows(char *arg, char*value, char **number, parameters_er
 }
 
 void
-validateDir(char *arg, char*value, char **number, parameters_error *error) {
+setDefaultDir(char **dir) {
+	char *s = calloc(strlen(DIRECTORY_DEFAULT_VALUE), sizeof(char));
+	strcpy(s, DIRECTORY_DEFAULT_VALUE);
+	*dir = s;
+	d_printf("Setting default directory: %s\n", *dir);
+}
+
+void
+validateDir(char *arg, char*value, char **dir, parameters_error *error) {
   if(strcmp(arg, S_DIR_ARG) == 0 || strcmp(arg, DIR_ARG) == 0) {
     char *s = calloc(DIR_MAX_LENGTH, sizeof(char));
     strcpy(s, value);
-    *number = s;
-    d_printf("Directory: %s\n", *number);
+    *dir = s;
+    d_printf("Directory: %s\n", *dir);
   }
 }
 
