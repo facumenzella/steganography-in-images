@@ -2,6 +2,21 @@
 #include "../includes/constants.h"
 
 BYTE* reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k);
+BYTE* revealPartialImage(BYTE* partial_image, int partial_image_size);
+
+BYTE*
+revealImage(int* n_values, int n_size, int k, BYTE* shadows_pixel) {
+	//Repetir hasta consumir todos los bytes de las sombras
+		//Agarrar el siguiente byte de cada una de las shadows
+		//hacer la interpolacion de lagrange para sacar los coeficientes, voy construyendo  partial_image
+	//pasar partial_image por revealPartialImage
+	//revertir la permutación
+
+	BYTE* coefficients = lagrangeInterpolation(n_values, n_size, k, shadows_pixel);
+	// Acá falta la "despermutación" de todo!!
+	return revealPartialImage(coefficients, k);
+}
+
 
 BYTE*
 lagrangeInterpolation(int* n_values, int n_size, int k, BYTE* shadows_pixel) {
@@ -85,17 +100,18 @@ identityMatrix(BYTE** matrix, int dimension) {
 }
 
 BYTE*
-reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k) {
-	BYTE* image = calloc(partial_image_size, sizeof(BYTE)); //La imagen tendrá un 
-	int i, j = 0;																					//tamaño k por el tamaño
-	while(i < partial_image_size) {												// de la sombra, por 2,
-		if (partial_image[i] < 250) {												//en el caso de que cada
-			image[j++] = partial_image[i++];									// pixel sea >= a 250.
+revealPartialImage(BYTE* partial_image, int partial_image_size) {
+	BYTE* result = calloc(partial_image_size, sizeof(BYTE));
+	int i, result_index = 0;
+	for (i = 0; i < partial_image_size; i++, result_index++) {
+		BYTE b = partial_image[i];
+		if (b == 250) {
+			BYTE following_b = partial_image[++i];
+			result[result_index] = b + following_b;
 		} else {
-			image[j++] = partial_image[i] + partial_image[i+1];
-			i+=2;
+			result[result_index] = b;
 		}
 	}
-	image = realloc(image, j);	//Comprimo la imagen borrando el espacio sobrante
-	return image;								//allocado inicialmente como partial_image_size.
+
+	return realloc(result, result_index);
 }
