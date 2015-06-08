@@ -4,10 +4,11 @@
 BYTE* reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k);
 
 BYTE*
-lagrangeInterpolation(int* n_values, int k, BYTE* shadows_pixel) {
+lagrangeInterpolation(int* n_values, int n_size, int k, BYTE* shadows_pixel) {
 	BYTE* partial_image_section_pixels = calloc(k, sizeof(BYTE));
 	BYTE** equations = declareEquations(k);
-	initializeEquations(equations, n, k);
+	initializeEquations(equations, n_size, k);
+
 	return partial_image_section_pixels;
 }
 
@@ -15,7 +16,7 @@ BYTE**
 declareEquations(int k) {
 	BYTE** equations = calloc(k, sizeof(BYTE*));
 	int i;
-	for (i = 0; i < k; ++i) {
+	for (i = 0; i < k; i++) {
 		equations[i] = calloc(k, sizeof(BYTE));
 	}
 	return equations;
@@ -27,6 +28,58 @@ initializeEquations(BYTE** equations, int n, int k) {
 	for (i = 0; i < k; i++) {
 		for (j = 0; j < k; j++) {
 			
+		}
+	}
+}
+
+BYTE**
+pixelCoefficients(BYTE** equations, int dimension) { //AKA: Matrix inversion
+	BYTE** inverseMatrix = declareEquations(dimension);
+	identityMatrix(inverseMatrix);
+	int i, j;
+	for (j = 0; j < dimension; j++) {
+		for (i = 0; i < dimension; i++) {
+			if (i != j) {
+				if (i != 0) {
+					equations[i] = multiplyRowBy(equations[i], dimension, equations[i-1][j]);
+					inverseMatrix[i] = multiplyRowBy(inverseMatrix[i], dimension, inverseMatrix[i-1][j]);
+					equations[i] = substractEquations(equations[i], multiplyRowBy(equations[i-1], dimension, equations[i]), dimension);
+				} else {
+					
+				}
+			}
+		}
+	}
+}
+
+BYTE*
+substractEquations(BYTE* equation_2, BYTE* equation_1, int dimension) {
+	BYTE* substracted_equation = calloc(dimension, sizeof(BYTE));
+	int i;
+	for (i = 0; i < dimension; i++) {
+		substracted_equation[i] = equation_2[i] - equation_1[i];
+	}
+	return substracted_equation;
+}
+
+BYTE*
+multiplyRowBy(BYTE* row, int row_size, int value) {
+	int i;
+	BYTE* multiplied_row = calloc(row_size, sizeof(BYTE));
+	for (i = 0; i < row_size; i++) {
+		multiplied_row[i] = row[i] * value;
+	}
+	return multiplied_row;
+}
+
+void
+identityMatrix(BYTE** matrix, int dimension) {
+	int i, j;
+	for (i = 0; i < dimension; i++) {
+		for (j = 0; j < dimension; j++) {
+			if (i == j) {
+				matrix[i][j] = 1;
+			}
 		}
 	}
 }
