@@ -61,7 +61,13 @@ saveImage(BMPImage image, char *path, io_error *err) {
 	int fileSize = getFilesize(image);
 	FILE * file;
 
-	file = fopen(path, WRITE_BINARY_MODE);
+  char *fullPath = calloc(strlen(path) + strlen(getFilename(image)), sizeof(char));
+  strcat(fullPath, path);
+  strcat(fullPath, getFilename(image));
+
+  d_printf("Trying to save %s\n", fullPath);
+
+	file = fopen(fullPath, WRITE_BINARY_MODE);
 	if(file == NULL) {
     setError(err, COULD_NOT_OPEN_FILE_ERROR);
     return;

@@ -39,7 +39,8 @@ of the secret image.
 	}
 	// we are cool, so we continue
 	BYTE **shadows = createLosslessShadows(E, image_size, n, k);
-	// TODO save shadows
+
+	
 }
 
 BYTE*
