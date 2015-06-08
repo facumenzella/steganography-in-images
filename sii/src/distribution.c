@@ -23,8 +23,8 @@ values of the secret image are in the range 0–250
 /* step 2 - Use a key to generate a permutation sequence to permute the pixels
 of the secret image.
 */
-
-
+	int n = getTotalShadows(parameters);
+	permutePixels(n, image);
 }
 
 BYTE*
@@ -44,12 +44,12 @@ convertImageToArrayWithoutLoss(BYTE* image, int image_size) {
 
 void
 permutePixels(int n, BYTE* image) {
-	int i, j;
+	int i;
 	for (i = n - 1; i > 0; i--) {
 		long int random = getRandom(i);
 		BYTE pivot = image[random];
-		image[random] = image[j];
-		image[j] = pivot;
+		image[random] = image[i];
+		image[i] = pivot;
 	}
 }
 

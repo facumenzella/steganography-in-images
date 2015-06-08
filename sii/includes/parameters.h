@@ -15,7 +15,7 @@
 #define MAX_ARGS 9
 #define SECRET_MAX_LENGTH 30
 #define K_MAX_LENGTH 2
-#define N_MAX_LENGTH 3
+#define N_MAX_LENGTH 1
 #define DIR_MAX_LENGTH 30
 
 #define MODE(s) (strcmp(s, "-d") == 0) ? "distribution" : (strcmp(s, "-r") == 0) ? "recover" : "invalid mode"
@@ -29,8 +29,8 @@ typedef enum {
 
 mode_type getMode(Parameters p);
 char *getSecret(Parameters p);
-char *getMinShadows(Parameters p);
-char *getTotalShadows(Parameters p);
+int getMinShadows(Parameters p);
+int getTotalShadows(Parameters p);
 char *getDirectory(Parameters p);
 
 // console parameters

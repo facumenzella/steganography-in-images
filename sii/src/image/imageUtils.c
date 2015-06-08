@@ -35,6 +35,7 @@ loadImage(char *path, io_error *err) {
   d_printf("\timage size: %d\n", imageSize);
 
   header = calloc(imageOffset, sizeof(BYTE));
+
   if (header == NULL) {
     setError(err, CALLOC_ERROR);
     freeWhatNeedsToBeFree(header, image, file);

@@ -130,6 +130,6 @@ haveOptionalArguments(int argc, int lastReaded) {
 // Parameters structure functions
 mode_type getMode(Parameters p) { return p->mode; }
 char *getSecret(Parameters p) { return p->secret; }
-char *getMinShadows(Parameters p) { return p->minShadows; }
-char *getTotalShadows(Parameters p) { return p-> totalShadows; }
+int getMinShadows(Parameters p) { return atoi(p->minShadows); }
+int getTotalShadows(Parameters p) { return atoi(p->totalShadows); }
 char *getDirectory(Parameters p) { return p->directory; }
