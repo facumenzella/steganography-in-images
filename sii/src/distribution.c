@@ -24,7 +24,7 @@ values of the secret image are in the range 0–250
 of the secret image.
 */
 
-	
+
 }
 
 BYTE*
@@ -46,8 +46,9 @@ void
 permutePixels(int n, BYTE* image) {
 	int i, j;
 	for (i = n - 1; i > 0; i--) {
-		BYTE pivot = image[i];
-		image[i] = image[j];
+		long int random = getRandom(i);
+		BYTE pivot = image[random];
+		image[random] = image[j];
 		image[j] = pivot;
 	}
 }
@@ -57,7 +58,7 @@ createLosslessShadows(unsigned char* image, int image_size, int n, int k) {
 	int shadow_pixel_index = 0;
 	BYTE* section = calloc(k, sizeof(BYTE));
 	BYTE** shadows = initializeShadows(image_size, n, k);
-	int i;
+		int i;
 	for (i = 0; i < sizeof(image); i++) {
 		if (i % k == 0) {
 			evaluateSection(section, shadows, shadow_pixel_index, n, k);
