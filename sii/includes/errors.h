@@ -1,6 +1,11 @@
 #ifndef __ERRORS_H__
 #define __ERRORS_H__
 
+// stdlib includes
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 // Deep shit errors
 static const char MALLOC_ERROR[] = "We could not malloc memory. We are so sorry";
 static const char CALLOC_ERROR[] = "We could not calloc memory. We are so sorry";
@@ -19,5 +24,8 @@ typedef char *parameters_error;
 typedef char *distribution_error;
 typedef char *image_error;
 typedef char *io_error;
+typedef char *main_error;
+
+void setError(char **err, const char msg[]);
 
 #endif

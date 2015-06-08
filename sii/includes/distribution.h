@@ -6,6 +6,6 @@
 #include "./image.h"
 #include "./imageUtils.h"
 
-void distribute(Parameters parameters);
+void distribute(Parameters parameters, main_error *err);
 
 #endif

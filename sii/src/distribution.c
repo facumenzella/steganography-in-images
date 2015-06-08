@@ -9,15 +9,22 @@ BYTE bytePow(BYTE base, int exponent);
 BYTE ** initializeShadows(int image_size, int n, int k);
 
 void
-distribute(Parameters parameters) {
-	io_error err = calloc(1024, sizeof(char));
-	BMPImage image = loadImage("../img/Albert.bmp", &err);
+distribute(Parameters parameters, main_error *err) {
+	char *file_name = getSecret(parameters);
+	BMPImage bmp = loadImage(file_name, err);
+	BYTE *image = getBMPImage(bmp);
 
-	if (err) {
-		d_printf("%s\n", "We fucked up");
-	} else {
-		d_printf("file name: %s\n", getFilename(image));
-	}
+/* step 1 - Truncate all gray values larger than 250 to 250 so that the gray
+values of the secret image are in the range 0–250
+*/
+
+	BYTE *t_image = convertImageToArrayWithoutLoss(image, getImageSize(bmp));
+
+/* step 2 - Use a key to generate a permutation sequence to permute the pixels
+of the secret image.
+*/
+
+
 }
 
 BYTE*

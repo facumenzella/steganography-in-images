@@ -1,17 +1,16 @@
 #include "../../includes/image.h"
 
-BMPImage initBMPImage(char *filename, int filesize, int offset, BYTE *header, BYTE *image, image_error *error);
-
 typedef struct image_t {
 	char *filename;
 	int fileSize;
 	int offset;
+	int imageSize;
 	BYTE *header;
 	BYTE *image;
 } image_t;
 
 BMPImage
-initBMPImage(char *filename, int fileSize, int offset, BYTE *header, BYTE *image, image_error *error) {
+initBMPImage(char *filename, int fileSize, int offset, int imageSize, BYTE *header, BYTE *image, image_error *error) {
 	// We calloc the hole struct
   BMPImage imageStruct = calloc(1, sizeof(struct image_t));
 	if (imageStruct == NULL) {
@@ -30,6 +29,7 @@ initBMPImage(char *filename, int fileSize, int offset, BYTE *header, BYTE *image
   // We set the fileSize & the offset
 	imageStruct->fileSize = fileSize;
 	imageStruct->offset = offset;
+	imageStruct->imageSize = imageSize;
 
   // We reserve space for the header
 	imageStruct->header = calloc(offset + 1, sizeof(BYTE));
@@ -39,12 +39,12 @@ initBMPImage(char *filename, int fileSize, int offset, BYTE *header, BYTE *image
 	}
 	memcpy(imageStruct->header, header, offset);
 
-	imageStruct->image = calloc(fileSize - offset + 1, sizeof(BYTE));
+	imageStruct->image = calloc(imageSize + 1, sizeof(BYTE));
 	if (imageStruct->image == NULL) {
     strcpy(*error, CALLOC_ERROR);
 		return NULL;
 	}
-	memcpy(imageStruct->image, image, fileSize - offset);
+	memcpy(imageStruct->image, image, imageSize);
 
 	return imageStruct;
 }
@@ -73,6 +73,11 @@ getFilesize(BMPImage image) {
 int
 getOffset(BMPImage image) {
 	return image->offset;
+}
+
+int
+getImageSize(BMPImage image) {
+	return image->imageSize;
 }
 
 BYTE *

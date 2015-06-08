@@ -22,7 +22,7 @@ loadImage(char *path, io_error *err) {
   file = fopen(path, READ_BINARY_MODE);
 	if (file == NULL) {
     d_printf("could not open: %s\n", path);
-		strcpy(*err, COULD_NOT_OPEN_FILE_ERROR);
+    setError(err, COULD_NOT_OPEN_FILE_ERROR);
     freeWhatNeedsToBeFree(header, image, file);
     return NULL;
 	}
@@ -34,22 +34,22 @@ loadImage(char *path, io_error *err) {
   readImageSize(file, &imageSize);
   d_printf("\timage size: %d\n", imageSize);
 
-  header = calloc(imageOffset + 1, sizeof(BYTE));
+  header = calloc(imageOffset, sizeof(BYTE));
   if (header == NULL) {
-		strcpy(*err, CALLOC_ERROR);
+    setError(err, CALLOC_ERROR);
     freeWhatNeedsToBeFree(header, image, file);
 		return NULL;
 	}
   readHeader(file, header, imageOffset);
 
-  image = calloc(imageSize + 1, sizeof(BYTE));
+  image = calloc(imageSize, sizeof(BYTE));
   if (image == NULL) {
-		strcpy(*err, CALLOC_ERROR);
+    setError(err, CALLOC_ERROR);
     freeWhatNeedsToBeFree(header, image, file);
 		return NULL;
 	}
   readImage(file, imageOffset, imageSize, image, err);
-  return initBMPImage(path, fileSize, imageOffset, header, image, err);
+  return initBMPImage(path, fileSize, imageOffset, imageSize, header, image, err);
 }
 
 void
@@ -60,12 +60,12 @@ saveImage(BMPImage image, char *path, io_error *err) {
 
 	file = fopen(path, WRITE_BINARY_MODE);
 	if(file == NULL) {
-		strcpy(*err, COULD_NOT_OPEN_FILE_ERROR);
+    setError(err, COULD_NOT_OPEN_FILE_ERROR);
     return;
 	}
 
 	fwrite(getHeader(image), sizeof(BYTE), offset, file);
-	fwrite(getBMPImage(image), sizeof(BYTE), fileSize - offset, file);
+	fwrite(getBMPImage(image), sizeof(BYTE), getImageSize(image), file);
 
 	fclose(file);
 }
@@ -93,7 +93,7 @@ readImageSize(FILE *file, int *imageSize) {
 
 void
 readHeader(FILE *file, BYTE *header, int headerSize) {
-  fseek(file, headerSize, SEEK_SET);
+  rewind(file);
   fread(header, sizeof(BYTE), headerSize, file);
   rewind(file);
 }
