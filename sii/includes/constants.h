@@ -10,4 +10,6 @@ typedef int boolean;
 #define FALSE !TRUE
 #endif
 
+#define EXIT exit(0)
+
 #endif

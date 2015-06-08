@@ -21,7 +21,7 @@ validateParameters(int argc, char *argv[], parameters_error *error) {
   Parameters parameters = malloc(sizeof(struct parameters_t));
   int ARGS = argc - 1; // we do not need the first argument
   if(invalidAmountOfArgs(ARGS)) {
-    strcpy(*error, QTY_ARGS_ERROR);
+		setError(error, QTY_ARGS_ERROR);
     return NULL;
 	}
 
@@ -34,9 +34,7 @@ validateParameters(int argc, char *argv[], parameters_error *error) {
   validateMinShadows(argv[4], argv[5], &parameters->minShadows, error);
 
   if (haveOptionalArguments(ARGS, 5)) {
-    if (DEBUGGING) {
-      printf("%s\n", "Starting to read optional console arguments...");
-    }
+    d_printf("%s\n", "Starting to read optional console arguments...");
     if (parameters->mode == DISTRIBUTE) {
       // We need to check for n argument
       boolean nWasProvided = validateTotalAmountOfShadows(argv[6], argv[7], &parameters->totalShadows, error);
@@ -69,11 +67,9 @@ validateModeType(char *arg, mode_type *mode, parameters_error *error) {
 	} else if(strcmp(arg, S_RECOVER_ARG) == 0 || strcmp(arg, RECOVER_ARG) == 0) {
 		*mode = RECOVER;
 	} else {
-    strcpy(*error, MODE_ARG_ERROR);
+		setError(error, MODE_ARG_ERROR);
 	}
-  if (DEBUGGING) {
-    printf("Mode: %s\n", MODE(arg));
-  }
+  d_printf("Mode: %s\n", MODE(arg));
 }
 
 void
@@ -83,11 +79,9 @@ validateSecret(char *arg, char *value,  char **secret, parameters_error *error) 
     char *s = calloc(SECRET_MAX_LENGTH, sizeof(char));
     strcpy(s, value);
     *secret = s;
-    if (DEBUGGING) {
-      printf("Secret: %s\n", *secret);
-    }
+    d_printf("Secret: %s\n", *secret);
   } else {
-    strcpy(*error, SECRET_ARG_ERROR);
+		setError(error, SECRET_ARG_ERROR);
   }
 }
 
@@ -97,11 +91,9 @@ validateMinShadows(char *arg, char*value, char **number, parameters_error *error
     char *s = calloc(K_MAX_LENGTH, sizeof(char));
     strcpy(s, value);
     *number = s;
-    if (DEBUGGING) {
-      printf("Min shadows: %s\n", *number);
-    }
+    d_printf("Min shadows: %s\n", *number);
   } else {
-    strcpy(*error, K_ARG_ERROR);
+		setError(error, K_ARG_ERROR);
   }
 }
 
@@ -111,9 +103,7 @@ validateTotalAmountOfShadows(char *arg, char*value, char **number, parameters_er
     char *s = calloc(N_MAX_LENGTH, sizeof(char));
     strcpy(s, value);
     *number = s;
-    if (DEBUGGING) {
-      printf("Total shadows: %s\n", *number);
-    }
+    d_printf("Total shadows: %s\n", *number);
     return TRUE;
   }
   return FALSE;
@@ -125,9 +115,7 @@ validateDir(char *arg, char*value, char **number, parameters_error *error) {
     char *s = calloc(DIR_MAX_LENGTH, sizeof(char));
     strcpy(s, value);
     *number = s;
-    if (DEBUGGING) {
-      printf("Directory: %s\n", *number);
-    }
+    d_printf("Directory: %s\n", *number);
   }
 }
 

@@ -22,7 +22,7 @@ loadImage(char *path, io_error *err) {
   file = fopen(path, READ_BINARY_MODE);
 	if (file == NULL) {
     d_printf("could not open: %s\n", path);
-		strcpy(*err, COULD_NOT_OPEN_FILE_ERROR);
+    setError(err, COULD_NOT_OPEN_FILE_ERROR);
     freeWhatNeedsToBeFree(header, image, file);
     return NULL;
 	}
@@ -36,7 +36,7 @@ loadImage(char *path, io_error *err) {
 
   header = calloc(imageOffset, sizeof(BYTE));
   if (header == NULL) {
-		strcpy(*err, CALLOC_ERROR);
+    setError(err, CALLOC_ERROR);
     freeWhatNeedsToBeFree(header, image, file);
 		return NULL;
 	}
@@ -44,7 +44,7 @@ loadImage(char *path, io_error *err) {
 
   image = calloc(imageSize, sizeof(BYTE));
   if (image == NULL) {
-		strcpy(*err, CALLOC_ERROR);
+    setError(err, CALLOC_ERROR);
     freeWhatNeedsToBeFree(header, image, file);
 		return NULL;
 	}
@@ -60,7 +60,7 @@ saveImage(BMPImage image, char *path, io_error *err) {
 
 	file = fopen(path, WRITE_BINARY_MODE);
 	if(file == NULL) {
-		strcpy(*err, COULD_NOT_OPEN_FILE_ERROR);
+    setError(err, COULD_NOT_OPEN_FILE_ERROR);
     return;
 	}
 

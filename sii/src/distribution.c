@@ -9,11 +9,11 @@ BYTE bytePow(BYTE base, int exponent);
 BYTE ** initializeShadows(int image_size, int n, int k);
 
 void
-distribute(Parameters parameters) {
-	io_error err = calloc(1024, sizeof(char));
-	BMPImage image = loadImage("../img/Albert.bmp", &err);
-	saveImage(image, "../img/Albert2.bmp", &err);
-	
+distribute(Parameters parameters, main_error *err) {
+	char *file_name = getSecret(parameters);
+	BMPImage image = loadImage(file_name, err);
+
+
 }
 
 BYTE*
