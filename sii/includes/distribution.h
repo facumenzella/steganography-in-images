@@ -5,6 +5,7 @@
 #include "./constants.h"
 #include "./image.h"
 #include "./imageUtils.h"
+#include "./random.h"
 
 void distribute(Parameters parameters, main_error *err);
 

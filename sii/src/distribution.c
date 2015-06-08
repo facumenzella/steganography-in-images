@@ -24,7 +24,7 @@ values of the secret image are in the range 0–250
 of the secret image.
 */
 
-
+	
 }
 
 BYTE*
