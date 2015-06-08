@@ -1,6 +1,15 @@
 #include <stdlib.h>
 #include "../includes/constants.h"
 
+BYTE* lagrangeInterpolation(int* n_values, int n_size, int k, BYTE* shadows_pixel);
+BYTE** declareEquations(int k);
+BYTE** initializeEquations(BYTE** equations, int n, int k);
+BYTE** pixelCoefficients(BYTE** equations, int dimension);
+BYTE* divideRowBy(BYTE* row, int row_size, BYTE value);
+BYTE multiplicativeInverse(BYTE number);
+BYTE* substractEquations(BYTE* equation_2, BYTE* equation_1, int dimension);
+BYTE* multiplyRowBy(BYTE* row, int row_size, BYTE value);
+void identityMatrix(BYTE** matrix, int dimension);
 BYTE* reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k);
 
 BYTE*
@@ -35,7 +44,7 @@ initializeEquations(BYTE** equations, int n, int k) {
 BYTE**
 pixelCoefficients(BYTE** equations, int dimension) { //AKA: Matrix inversion
 	BYTE** inverseMatrix = declareEquations(dimension);
-	identityMatrix(inverseMatrix);
+	identityMatrix(inverseMatrix, dimension);
 	int i, j;
 	for (j = 0; j < dimension; j++) {
 		for (i = 0; i < dimension; i++) {
@@ -43,13 +52,33 @@ pixelCoefficients(BYTE** equations, int dimension) { //AKA: Matrix inversion
 				if (i != 0) {
 					equations[i] = multiplyRowBy(equations[i], dimension, equations[i-1][j]);
 					inverseMatrix[i] = multiplyRowBy(inverseMatrix[i], dimension, inverseMatrix[i-1][j]);
-					equations[i] = substractEquations(equations[i], multiplyRowBy(equations[i-1], dimension, equations[i]), dimension);
+					equations[i] = substractEquations(equations[i], multiplyRowBy(equations[i-1], dimension, equations[i][j]), dimension);
 				} else {
-					
+					if (j != 0) {
+						equations[i] = multiplyRowBy(equations[i], dimension, equations[i+1][j]);
+						inverseMatrix[i] = multiplyRowBy(inverseMatrix[i], dimension, inverseMatrix[i+1][j]);
+						equations[i] = substractEquations(equations[i], multiplyRowBy(equations[i+1], dimension, equations[i][j]), dimension);
+					}
 				}
 			}
 		}
 	}
+	i = 0;
+	for (i = 0; i < dimension; i++) {
+		inverseMatrix[i] = divideRowBy(inverseMatrix[i], dimension, inverseMatrix[i][i]);
+	}
+	return inverseMatrix;
+}
+
+BYTE*
+divideRowBy(BYTE* row, int row_size, BYTE value) {
+	multiplyRowBy(row, row_size, multiplicativeInverse(value));
+}
+
+// bytePow() está en distribution.c. Quizás haya que extraer el código a una librería más general.
+BYTE
+multiplicativeInverse(BYTE number) {
+	return bytePow(number, MAX_BYTE_VALUE - number) % MAX_BYTE_VALUE;
 }
 
 BYTE*
@@ -63,7 +92,7 @@ substractEquations(BYTE* equation_2, BYTE* equation_1, int dimension) {
 }
 
 BYTE*
-multiplyRowBy(BYTE* row, int row_size, int value) {
+multiplyRowBy(BYTE* row, int row_size, BYTE value) {
 	int i;
 	BYTE* multiplied_row = calloc(row_size, sizeof(BYTE));
 	for (i = 0; i < row_size; i++) {

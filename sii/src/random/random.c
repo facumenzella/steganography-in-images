@@ -5,7 +5,7 @@ void randomize(int num);
 
 long int
 getRandom(long int max) {
-  return (long int) (randnormalize()*(max + 1)); /*devuelve un número en [0,max]*/
+  return (long int) (randnormalize()*(max + 1)); /*devuelve un número en [0,max]*/
 }
 
 double
