@@ -70,7 +70,7 @@ evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, in
 		for (j = 0; j < k; j++) {
 			ans += bytePow(i, j);
 		}
-		shadows[i-1][shadow_pixel_index] = ans % MAX_BYTE_VALUE;
+		shadows[i-1][shadow_pixel_index] = ans%MAX_BYTE_VALUE;
 	}
 }
 
@@ -87,10 +87,10 @@ bytePow(BYTE base, int exponent) {
 BYTE **
 initializeShadows(int image_size, int n, int k) {
 	BYTE** shadows = calloc(n, sizeof(BYTE *));
-	int size_of_shadow = image_size/k;
+	int shadow_size = image_size/k;
 	int i = 0;
 	for (i = 0; i < n; ++i) {
-		shadows[i] = calloc(size_of_shadow, sizeof(BYTE));
+		shadows[i] = calloc(shadow_size, sizeof(BYTE));
 	}
 	return shadows;
 }

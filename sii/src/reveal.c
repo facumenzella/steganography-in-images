@@ -4,6 +4,34 @@
 BYTE* reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k);
 
 BYTE*
+lagrangeInterpolation(int* n_values, int k, BYTE* shadows_pixel) {
+	BYTE* partial_image_section_pixels = calloc(k, sizeof(BYTE));
+	BYTE** equations = declareEquations(k);
+	initializeEquations(equations, n, k);
+	return partial_image_section_pixels;
+}
+
+BYTE**
+declareEquations(int k) {
+	BYTE** equations = calloc(k, sizeof(BYTE*));
+	int i;
+	for (i = 0; i < k; ++i) {
+		equations[i] = calloc(k, sizeof(BYTE));
+	}
+	return equations;
+}
+
+BYTE**
+initializeEquations(BYTE** equations, int n, int k) {
+	int i, j;
+	for (i = 0; i < k; i++) {
+		for (j = 0; j < k; j++) {
+			
+		}
+	}
+}
+
+BYTE*
 reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k) {
 	BYTE* image = calloc(partial_image_size, sizeof(BYTE)); //La imagen tendrá un 
 	int i, j = 0;																					//tamaño k por el tamaño
