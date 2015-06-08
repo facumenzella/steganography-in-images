@@ -18,7 +18,10 @@ static const char K_ARG_ERROR[] = "You have to provide a minimum number of shado
 
 // IO errors
 static const char COULD_NOT_OPEN_FILE_ERROR[] = "We could not open the file you provided";
+static const char COULD_NOT_OPEN_DIR_ERROR[] = "We could not open the directory you provided";
 
+// Shadow errors
+static const char NOT_ENOUGH_SHADOWS_ERROR[] = "Not enough shadows. Why god? Why?";
 
 typedef char *parameters_error;
 typedef char *distribution_error;

@@ -13,6 +13,7 @@ distribute(Parameters parameters, main_error *err) {
 	char *file_name = getSecret(parameters);
 	BMPImage bmp = loadImage(file_name, err);
 	BYTE *image = getBMPImage(bmp);
+	char *directory = getDirectory(parameters);
 	int image_size = getImageSize(bmp);
 	int n = getTotalShadows(parameters);
 	int k = getMinShadows(parameters);
@@ -24,17 +25,20 @@ of the secret image.
 
 	/* step 2 - Sequentially read in gray values of D* and then store in E according to the rule below.
 	For each read-in gray value pi of D* :
-		2.1. If pio250; then store pi in E:
-		2.2. If piX250; then split pi into two values 250 and (pi - 250).
+		2.1. If pi<=250; then store pi in E:
+		2.2. If pi>250; then split pi into two values 250 and (pi - 250).
 		Store these two values in E (first 250, then pi - 250).
 	*/
 	BYTE *E = convertImageToArrayWithoutLoss(image, image_size);
 
-	// step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
-	// step 4 - Generate n pixels for the n shadow images.
-	// step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
+	BMPImage *shadowImages = loadImages(directory, n, err);
+	if (*err || shadowImages == NULL) {
+		d_printf("%s\n", *err);
+		return; // we fucked up.
+	}
+	// we are cool, so we continue
 	BYTE **shadows = createLosslessShadows(E, image_size, n, k);
-
+	// TODO save shadows
 }
 
 BYTE*
@@ -66,11 +70,15 @@ permutePixels(int n, BYTE* image) {
 BYTE**
 createLosslessShadows(unsigned char* image, int image_size, int n, int k) {
 	int shadow_pixel_index = 0;
+	// step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
 	BYTE* section = calloc(k, sizeof(BYTE));
 	BYTE** shadows = initializeShadows(image_size, n, k);
 		int i;
+
+	// step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
 	for (i = 0; i < sizeof(image); i++) {
 		if (i % k == 0) {
+			// step 4 - Generate n pixels for the n shadow images
 			evaluateSection(section, shadows, shadow_pixel_index, n, k);
 			shadow_pixel_index++;
 			memset(section, 0, k);

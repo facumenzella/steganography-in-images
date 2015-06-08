@@ -99,3 +99,12 @@ void
 setBMPImageInIndex(BMPImage image, char value, int index) {
 	image->image[index] = value;
 }
+
+BMPImage
+clone(BMPImage image, io_error *err) {
+	BMPImage newImage = initBMPImage(image->filename, image->fileSize, image->offset, image->imageSize, image->header, image->image, err);
+	if (*err != NULL) {
+		return NULL;
+	}
+	return newImage;
+}

@@ -12,6 +12,8 @@ void readImageSize(FILE *file, int *imageSize);
 void readHeader(FILE *file, BYTE *header, int headerSize);
 void readImage(FILE *file, int imageOffset, int imageSize, BYTE *image, io_error *err);
 void freeWhatNeedsToBeFree(BYTE *header, BYTE *image, FILE *file);
+boolean isDir(char *path);
+boolean isBMP(char * path);
 
 BMPImage
 loadImage(char *path, io_error *err) {
@@ -71,6 +73,62 @@ saveImage(BMPImage image, char *path, io_error *err) {
 	fclose(file);
 }
 
+BMPImage*
+loadImages(char *dir, int n, io_error *err) {
+  d_printf("Fetching images from %s\n", dir);
+  DIR *pwd = NULL;
+  NEXT_DIR curr = NULL;
+  int imagesRead = 0;
+  BMPImage *shadows = calloc(n, sizeof(BMPImage*));
+  if((pwd = opendir(dir)) == NULL) {
+    setError(err, COULD_NOT_OPEN_DIR_ERROR);
+    return NULL;
+  }
+
+  while((curr = readdir(pwd)) != NULL && imagesRead < n) {
+    char *fullPath = calloc(strlen(curr->d_name) + strlen(dir) + 2, sizeof(char));
+		if (fullPath == NULL) {
+      setError(err, CALLOC_ERROR);
+      return NULL;
+		}
+    // we initialize the fullpath with the directory path
+    strncat(fullPath, dir, strlen(dir));
+    // we append '/' to the end of the path if needed
+    if(dir[strlen(dir) - 1] != '/') {
+				strncat(fullPath, "/", 1);
+		}
+    // we append the file name to the path
+    strncat(fullPath, curr->d_name, strlen(curr->d_name));
+
+    // now we want to check that we only open files
+    if(isDir(fullPath) == FALSE) {
+      // its a file not a directory
+      if (isBMP(fullPath)) {
+        BMPImage shadowImage = loadImage(fullPath, err);
+        d_printf("\topening %s \n", getFilename(shadowImage));
+        if (*err != NULL) {
+          closedir(pwd);
+        	free(fullPath);
+        	return NULL;
+        }
+        BMPImage i = clone(shadowImage, err);
+        if (*err != NULL || i == NULL) {
+          closedir(pwd);
+        	free(fullPath);
+        	return NULL;
+        }
+        shadows[imagesRead++] = i;
+      }
+    }
+  }
+  if (imagesRead < n) {
+    setError(err, NOT_ENOUGH_SHADOWS_ERROR);
+    return NULL;
+  }
+  return shadows;
+}
+
+// Private functions
 void
 readFileSize(FILE *file, int *fileSize) {
   fseek(file, FILE_SIZE_OFFSET, SEEK_SET);
@@ -117,4 +175,14 @@ freeWhatNeedsToBeFree(BYTE *header, BYTE *image, FILE *file) {
   if (image != NULL) {
     free(image);
   }
+}
+
+boolean
+isBMP(char * path) {
+  return strstr(path, BMP) != NULL;
+}
+
+boolean
+isDir(char *path) {
+  return (opendir(path) != NULL);
 }
