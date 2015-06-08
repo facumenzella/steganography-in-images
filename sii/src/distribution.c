@@ -11,7 +11,18 @@ BYTE ** initializeShadows(int image_size, int n, int k);
 void
 distribute(Parameters parameters, main_error *err) {
 	char *file_name = getSecret(parameters);
-	BMPImage image = loadImage(file_name, err);
+	BMPImage bmp = loadImage(file_name, err);
+	BYTE *image = getBMPImage(bmp);
+
+/* step 1 - Truncate all gray values larger than 250 to 250 so that the gray
+values of the secret image are in the range 0–250
+*/
+
+	BYTE *t_image = convertImageToArrayWithoutLoss(image, getImageSize(bmp));
+
+/* step 2 - Use a key to generate a permutation sequence to permute the pixels
+of the secret image.
+*/
 
 
 }
