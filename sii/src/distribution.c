@@ -16,8 +16,8 @@ distribute(Parameters parameters, main_error *err) {
 	BYTE *image = getBMPImage(bmp);
 	char *directory = getDirectory(parameters);
 	int image_size = getImageSize(bmp);
-	int n = getTotalShadows(parameters);
-	int k = getMinShadows(parameters);
+	int n = getTotalAmountOfShadowsToDistributeSecret(parameters);
+	int k = getMinShadowsToRecoverSecret(parameters);
 
 /* step 1 - Use a key to generate a permutation sequence to permute the pixels
 of the secret image.

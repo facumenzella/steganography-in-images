@@ -15,6 +15,9 @@ static const char QTY_ARGS_ERROR[] = "You have to provided the wrong amount of p
 static const char MODE_ARG_ERROR[] = "You have to provide either discover or recover mode";
 static const char SECRET_ARG_ERROR[] = "You have to provide a secret image";
 static const char K_ARG_ERROR[] = "You have to provide a minimum number of shadows";
+static const char K_GREATER_THAN_N[] = "K must be lower than N";
+static const char K_LOWER_THAN_2[] = "K must be at least 2";
+
 
 // IO errors
 static const char COULD_NOT_OPEN_FILE_ERROR[] = "We could not open the file you provided";

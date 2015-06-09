@@ -29,8 +29,8 @@ typedef enum {
 
 mode_type getMode(Parameters p);
 char *getSecret(Parameters p);
-int getMinShadows(Parameters p);
-int getTotalShadows(Parameters p);
+int getMinShadowsToRecoverSecret(Parameters p);
+int getTotalAmountOfShadowsToDistributeSecret(Parameters p);
 char *getDirectory(Parameters p);
 
 // console parameters
