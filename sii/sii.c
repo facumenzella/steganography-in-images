@@ -29,7 +29,7 @@ main(int argc, char * argv[]) {
 
 void
 handleErrorIfNeeded(parameters_error error) {
-  if (error) {
+  if (error != NULL) {
     d_printf("%s\n", error);
     EXIT;
   }

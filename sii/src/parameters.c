@@ -18,6 +18,7 @@ boolean checkIfTotalAmountOfShadowsWasProvided(char *arg, char*value, parameters
 int validateTotalAmountOfShadowsToDistributeSecret(char *totalAmount, char *minShadows, parameters_error *error);
 char* validateDir(char *arg, char*value, parameters_error *error);
 boolean haveOptionalArguments(int argc, int lastReaded);
+boolean isValidWithinRelatedArguemtents(Parameters parameters);
 
 Parameters
 validateParameters(int argc, char *argv[], parameters_error *error) {
@@ -32,20 +33,33 @@ validateParameters(int argc, char *argv[], parameters_error *error) {
   d_printf("\n%s\n", "Starting to read console arguments...");
 
   parameters->mode = validateModeType(argv[1], error);
+	if (*error != NULL) {
+		return NULL;
+	}
   parameters->secret = validateSecret(argv[2], argv[3], error);
+	if (*error != NULL) {
+		return NULL;
+	}
   parameters->minShadowsToRecoverSecret = validateMinShadowsToRecoverSecret(argv[4], argv[5], error);
+	if (*error != NULL) {
+		return NULL;
+	}
 
   if (haveOptionalArguments(ARGS, 5)) {
     d_printf("%s\n", "Starting to read optional console arguments...");
     if (parameters->mode == DISTRIBUTE) {
       // We need to check for n argument
+			parameters->totalAmountOfShadowsToDistributeSecret = -1; // just in case it is not provided
       boolean nWasProvided = checkIfTotalAmountOfShadowsWasProvided(argv[6], argv[7], error);
-      if (nWasProvided) {
+      if (nWasProvided == TRUE) {
 				parameters->totalAmountOfShadowsToDistributeSecret = validateTotalAmountOfShadowsToDistributeSecret(argv[6], argv[7], error);
-        if (haveOptionalArguments(ARGS, 7)) {
+				if (*error != NULL) {
+					return NULL;
+				}
+				if (haveOptionalArguments(ARGS, 7) == TRUE) {
 					parameters->directory = validateDir(argv[8], argv[9], error);
         }
-      } else if (haveOptionalArguments(ARGS, 5)) {
+      } else if (haveOptionalArguments(ARGS, 5) == TRUE) {
         parameters->directory = validateDir(argv[6], argv[7], error);
 				if (parameters->directory == NULL) {
 					setDefaultDir(&parameters->directory);
@@ -53,7 +67,12 @@ validateParameters(int argc, char *argv[], parameters_error *error) {
       }
     }
   }
-  return parameters;
+	if (isValidWithinRelatedArguemtents(parameters) == FALSE) {
+		// we fucked up
+		setError(error, K_GREATER_THAN_N);
+		return NULL;
+	}
+	return parameters;
 }
 
 boolean
@@ -102,12 +121,14 @@ validateMinShadowsToRecoverSecret(char *arg, char*value, parameters_error *error
     d_printf("Min shadows: %s\n", s);
   } else {
 		setError(error, K_ARG_ERROR);
+		return -1;
   }
 	int k = -1;
-	if (s != NULL && (k = atoi(s)) >= 2) {
-		return k;
+	if ((k = atoi(s)) < 2) {
+		setError(error, K_LOWER_THAN_2);
+		return -1;
 	}
-	return -1;
+	return k;
 }
 
 boolean
@@ -119,16 +140,17 @@ checkIfTotalAmountOfShadowsWasProvided(char *arg, char*value, parameters_error *
 }
 
 int
-validateTotalAmountOfShadowsToDistributeSecret(char *totalAmount, char *minShadows, parameters_error *error) {
+validateTotalAmountOfShadowsToDistributeSecret(char *totalAmount, char *totalShadows, parameters_error *error) {
 	// there is no validation because we have already validated
 	char *s = calloc(N_MAX_LENGTH, sizeof(char));
-  strcpy(s, minShadows);
+  strcpy(s, totalShadows);
   d_printf("Total shadows: %s\n", s);
 	int n = -1;
-	if ( (n = atoi(s) >= 2)) {
-		return n;
+	if ( (n = atoi(s)) < 2) {
+		setError(error, N_LOWER_THAN_2);
+		return -1;
 	}
-	return -1;
+	return n;
 }
 
 void
@@ -156,6 +178,17 @@ haveOptionalArguments(int argc, int lastReaded) {
     return TRUE;
   }
   return FALSE;
+}
+
+boolean
+isValidWithinRelatedArguemtents(Parameters parameters) {
+	// k <= n
+	d_printf("min %d max %d\n", parameters->minShadowsToRecoverSecret, parameters->totalAmountOfShadowsToDistributeSecret);
+
+	if (parameters->minShadowsToRecoverSecret <= parameters->totalAmountOfShadowsToDistributeSecret) {
+		return TRUE;
+	}
+	return FALSE;
 }
 
 // Parameters structure functions
