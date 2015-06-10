@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <stdio.h>
 #include "../includes/math.h"
 
 BYTE
@@ -83,6 +85,18 @@ printSquareMatrix(int** matrix, int dimension) {
 	}
 }
 
+void
+printByteSquareMatrix(BYTE** matrix, int dimension) {
+	int i, j;
+	printf("\n");
+	for (i = 0; i < dimension; i++) {
+		for (j = 0; j < dimension; j++) {
+			printf("%d\t", matrix[i][j]);
+		}
+		printf("\n");
+	}
+}
+
 int**
 declareEquations(int k) {
 	int** equations = calloc(k, sizeof(int*));
@@ -93,8 +107,18 @@ declareEquations(int k) {
 	return equations;
 }
 
+BYTE**
+declareByteEquations(int k) {
+	BYTE** equations = calloc(k, sizeof(BYTE*));
+	int i;
+	for (i = 0; i < k; i++) {
+		equations[i] = calloc(k, sizeof(BYTE));
+	}
+	return equations;
+}
+
 int**
-multiplySquareByteMatrices(int** matrix_1, int** matrix_2, int dimension) {
+multiplySquareMatrices(int** matrix_1, int** matrix_2, int dimension) {
 	int i, j, k;
 	k = 0;
 	int** ans = declareEquations(dimension);
@@ -106,6 +130,44 @@ multiplySquareByteMatrices(int** matrix_1, int** matrix_2, int dimension) {
 		ans[i][k++] = value_i_j;
 		if (k % dimension == 0) {
 			k = 0;
+		}
+	}
+	return ans;
+}
+
+BYTE**
+multiplyByteSquareMatrices(BYTE** matrix_1, BYTE** matrix_2, int dimension) {
+	int i, j, k;
+	k = 0;
+	BYTE** ans = declareByteEquations(dimension);
+	for (i = 0; i < dimension; i++) {
+		int value_i_j = 0;
+		for (j = 0; j < dimension; j++) {
+			value_i_j += matrix_1[i][j] * matrix_2[j][i];
+		}
+		ans[i][k++] = value_i_j % MAX_BYTE_VALUE;
+		if (k % dimension == 0) {
+			k = 0;
+		}
+	}
+	return ans;
+}
+
+BYTE**
+makeModularMatrix(int** matrix, int dimension) {
+	int i, j;
+	BYTE** ans = declareByteEquations(dimension);
+	for (i = 0; i < dimension; i++) {
+		for (j = 0; j < dimension; j++) {
+			int value = matrix[i][j];
+			if (value < 0) {
+				while (value < 0) {
+					value += MAX_BYTE_VALUE;
+				}
+				ans[i][j] = value;
+			} else {
+				ans[i][j] = matrix[i][j] % MAX_BYTE_VALUE;
+			}
 		}
 	}
 	return ans;

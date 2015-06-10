@@ -1,8 +1,6 @@
 #ifndef __MATH_H__
 #define __MATH_H__
 
-#include <stdlib.h>
-#include <stdio.h>
 #include "constants.h"
 #include "random.h"
 
@@ -15,7 +13,11 @@ void printRow(int* row, int size);
 int* multiplyRowBy(int* row, int row_size, BYTE value);
 void identityMatrix(int** matrix, int dimension);
 void printSquareMatrix(int** matrix, int dimension);
+void printByteSquareMatrix(BYTE** matrix, int dimension);
 int** declareEquations(int k);
-int** multiplySquareByteMatrices(int** matrix_1, int** matrix_2, int dimension);
+BYTE** declareByteEquations(int k);
+int** multiplySquareMatrices(int** matrix_1, int** matrix_2, int dimension);
+BYTE** multiplyByteSquareMatrices(BYTE** matrix_1, BYTE** matrix_2, int dimension);
+BYTE** makeModularMatrix(int** matrix, int dimension);
 
 #endif

@@ -127,5 +127,5 @@ main(void) {
 	inverse[2][1] = 0;
 	inverse[2][2] = 1;
 	// int** ans = pixelCoefficients(matrix, 3);
-	printSquareMatrix(multiplySquareByteMatrices(inverse, matrix, 3), 3);
+	printByteSquareMatrix(multiplyByteSquareMatrices(makeModularMatrix(inverse, 3), makeModularMatrix(matrix, 3), 3), 3);
 }
