@@ -48,7 +48,7 @@ static const char DIR_ARG[] = "-directory";
 static const char S_DIR_ARG[] = "-dir";
 
 // default values
-static const char DIRECTORY_DEFAULT_VALUE[] = "./";
+static const char DIRECTORY_DEFAULT_VALUE[] = "../img/";
 
 
 // functions

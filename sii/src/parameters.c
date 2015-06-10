@@ -1,15 +1,15 @@
 #include "../includes/parameters.h"
 
 typedef struct parameters_t {
-	mode_type mode;
+    mode_type mode;
 	char *secret;
-  int minShadowsToRecoverSecret;
-  int totalAmountOfShadowsToDistributeSecret;
-  char *directory;
+    int minShadowsToRecoverSecret;
+    int totalAmountOfShadowsToDistributeSecret;
+    char *directory;
 }parameters_t;
 
 boolean invalidAmountOfArgs(int args);
-void setDefaultDir(char **dir);
+char* defaultDir();
 
 mode_type validateModeType(char *arg, parameters_error *error);
 char* validateSecret(char *arg, char *value, parameters_error *error);
@@ -19,55 +19,55 @@ int validateTotalAmountOfShadowsToDistributeSecret(char *totalAmount, char *minS
 char* validateDir(char *arg, char*value, parameters_error *error);
 boolean haveOptionalArguments(int argc, int lastReaded);
 boolean isValidWithinRelatedArguemtents(Parameters parameters);
+Parameters newParameters();
 
 Parameters
 validateParameters(int argc, char *argv[], parameters_error *error) {
   int ARGS = argc - 1; // we do not need the first argument
   if(invalidAmountOfArgs(ARGS)) {
-		setError(error, QTY_ARGS_ERROR);
-    return NULL;
-	}
-
-	Parameters parameters = malloc(sizeof(struct parameters_t));
-
-  d_printf("\n%s\n", "Starting to read console arguments...");
-
-  parameters->mode = validateModeType(argv[1], error);
-	if (*error != NULL) {
-		return NULL;
-	}
-  parameters->secret = validateSecret(argv[2], argv[3], error);
-	if (*error != NULL) {
-		return NULL;
-	}
-  parameters->minShadowsToRecoverSecret = validateMinShadowsToRecoverSecret(argv[4], argv[5], error);
-	if (*error != NULL) {
-		return NULL;
-	}
-
-  if (haveOptionalArguments(ARGS, 5)) {
-    d_printf("%s\n", "Starting to read optional console arguments...");
-    if (parameters->mode == DISTRIBUTE) {
-      // We need to check for n argument
-			parameters->totalAmountOfShadowsToDistributeSecret = -1; // just in case it is not provided
-      boolean nWasProvided = checkIfTotalAmountOfShadowsWasProvided(argv[6], argv[7], error);
-      if (nWasProvided == TRUE) {
-				parameters->totalAmountOfShadowsToDistributeSecret = validateTotalAmountOfShadowsToDistributeSecret(argv[6], argv[7], error);
-				if (*error != NULL) {
-					return NULL;
-				}
-				if (haveOptionalArguments(ARGS, 7) == TRUE) {
-					parameters->directory = validateDir(argv[8], argv[9], error);
-        }
-      } else if (haveOptionalArguments(ARGS, 5) == TRUE) {
-        parameters->directory = validateDir(argv[6], argv[7], error);
-				if (parameters->directory == NULL) {
-					setDefaultDir(&parameters->directory);
-				}
-      }
-    }
+      setError(error, QTY_ARGS_ERROR);
+      return NULL;
   }
-	if (isValidWithinRelatedArguemtents(parameters) == FALSE) {
+    Parameters parameters = newParameters();
+    
+    d_printf("\n%s\n", "Starting to read console arguments...");
+    
+    parameters->mode = validateModeType(argv[1], error);
+	if (*error != NULL) {
+		return NULL;
+	}
+    parameters->secret = validateSecret(argv[2], argv[3], error);
+	if (*error != NULL) {
+		return NULL;
+	}
+    parameters->minShadowsToRecoverSecret = validateMinShadowsToRecoverSecret(argv[4], argv[5], error);
+	if (*error != NULL) {
+		return NULL;
+	}
+    if (haveOptionalArguments(ARGS, 5)) {
+        d_printf("%s\n", "Starting to read optional console arguments...");
+        if (parameters->mode == DISTRIBUTE) {
+            // We need to check for n argument
+            parameters->totalAmountOfShadowsToDistributeSecret = -1; // just in case it is not provided
+            boolean nWasProvided = checkIfTotalAmountOfShadowsWasProvided(argv[6], argv[7], error);
+            if (nWasProvided == TRUE) {
+                parameters->totalAmountOfShadowsToDistributeSecret =
+                validateTotalAmountOfShadowsToDistributeSecret(argv[6], argv[7], error);
+                if (*error != NULL) {
+                    return NULL;
+                }
+                if (haveOptionalArguments(ARGS, 7) == TRUE) {
+                    parameters->directory = validateDir(argv[8], argv[9], error);
+                }
+            } else if (haveOptionalArguments(ARGS, 5) == TRUE) {
+                parameters->directory = validateDir(argv[6], argv[7], error);
+            }
+        }
+    }
+    if (parameters->directory == NULL) {
+        parameters->directory = defaultDir();
+    }
+    if (isValidWithinRelatedArguemtents(parameters) == FALSE) {
 		// we fucked up
 		setError(error, K_GREATER_THAN_N);
 		return NULL;
@@ -153,23 +153,23 @@ validateTotalAmountOfShadowsToDistributeSecret(char *totalAmount, char *totalSha
 	return n;
 }
 
-void
-setDefaultDir(char **dir) {
+char*
+defaultDir() {
 	char *s = calloc(strlen(DIRECTORY_DEFAULT_VALUE), sizeof(char));
 	strcpy(s, DIRECTORY_DEFAULT_VALUE);
-	*dir = s;
-	d_printf("Setting default directory: %s\n", *dir);
+	d_printf("Setting default directory: %s\n", s);
+    return s;
 }
 
 char*
 validateDir(char *arg, char*value, parameters_error *error) {
-	char *s = NULL;
-	if(strcmp(arg, S_DIR_ARG) == 0 || strcmp(arg, DIR_ARG) == 0) {
-    s = calloc(DIR_MAX_LENGTH, sizeof(char));
-    strcpy(s, value);
-    d_printf("Directory: %s\n", s);
-  }
-	return s;
+    char *s = NULL;
+    if(strcmp(arg, S_DIR_ARG) == 0 || strcmp(arg, DIR_ARG) == 0) {
+        s = calloc(DIR_MAX_LENGTH, sizeof(char));
+        strcpy(s, value);
+        d_printf("Directory: %s\n", s);
+    }
+    return s;
 }
 
 boolean
@@ -183,15 +183,20 @@ haveOptionalArguments(int argc, int lastReaded) {
 boolean
 isValidWithinRelatedArguemtents(Parameters parameters) {
 	// k <= n
-	d_printf("min %d max %d\n", parameters->minShadowsToRecoverSecret, parameters->totalAmountOfShadowsToDistributeSecret);
-
-	if (parameters->minShadowsToRecoverSecret <= parameters->totalAmountOfShadowsToDistributeSecret) {
+	if ( (parameters->totalAmountOfShadowsToDistributeSecret == -1) ||
+        parameters->minShadowsToRecoverSecret <= parameters->totalAmountOfShadowsToDistributeSecret) {
 		return TRUE;
 	}
 	return FALSE;
 }
 
 // Parameters structure functions
+Parameters newParameters() {
+    Parameters parameters = malloc(sizeof(struct parameters_t));
+    parameters->minShadowsToRecoverSecret = -1;
+    parameters->totalAmountOfShadowsToDistributeSecret = -1;
+    return parameters;
+}
 mode_type getMode(Parameters p) { return p->mode; }
 char *getSecret(Parameters p) { return p->secret; }
 int getMinShadowsToRecoverSecret(Parameters p) { return p->minShadowsToRecoverSecret; }
