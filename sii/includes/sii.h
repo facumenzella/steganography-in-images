@@ -7,9 +7,10 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "./arguments.h"
+#include "./cmd.h"
 #include "./errors.h"
 #include "./constants.h"
+#include "./cmd.h"
 #include "./distribution.h"
 
 #endif

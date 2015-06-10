@@ -27,7 +27,7 @@ static const char COULD_NOT_OPEN_DIR_ERROR[] = "We could not open the directory 
 // Shadow errors
 static const char NOT_ENOUGH_SHADOWS_ERROR[] = "Not enough shadows. Why god? Why?";
 
-typedef char *parameters_error;
+typedef char *arguments_error;
 typedef char *distribution_error;
 typedef char *image_error;
 typedef char *io_error;
