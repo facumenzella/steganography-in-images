@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "./parameters.h"
+#include "./arguments.h"
 #include "./errors.h"
 #include "./constants.h"
 #include "./distribution.h"

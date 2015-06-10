@@ -1,4 +1,4 @@
-#include "../includes/parameters.h"
+#include "../includes/arguments.h"
 
 typedef struct parameters_t {
     mode_type mode;
@@ -51,24 +51,27 @@ validateParameters(int argc, char *argv[], parameters_error *error) {
             parameters->totalAmountOfShadowsToDistributeSecret = -1; // just in case it is not provided
             boolean nWasProvided = checkIfTotalAmountOfShadowsWasProvided(argv[6], argv[7], error);
             if (nWasProvided == TRUE) {
+                // n was provided
                 parameters->totalAmountOfShadowsToDistributeSecret =
                 validateTotalAmountOfShadowsToDistributeSecret(argv[6], argv[7], error);
                 if (*error != NULL) {
                     return NULL;
                 }
+                // We need to check for dir argument
                 if (haveOptionalArguments(ARGS, 7) == TRUE) {
                     parameters->directory = validateDir(argv[8], argv[9], error);
                 }
+            // Maybe they have only provided dir
             } else if (haveOptionalArguments(ARGS, 5) == TRUE) {
                 parameters->directory = validateDir(argv[6], argv[7], error);
             }
         }
     }
+    // no dir, so we set the default
     if (parameters->directory == NULL) {
         parameters->directory = defaultDir();
     }
     if (isValidWithinRelatedArguemtents(parameters) == FALSE) {
-		// we fucked up
 		setError(error, K_GREATER_THAN_N);
 		return NULL;
 	}
@@ -167,7 +170,7 @@ validateDir(char *arg, char*value, parameters_error *error) {
     if(strcmp(arg, S_DIR_ARG) == 0 || strcmp(arg, DIR_ARG) == 0) {
         s = calloc(DIR_MAX_LENGTH, sizeof(char));
         strcpy(s, value);
-        d_printf("Directory: %s\n", s);
+        d_printf("Setting directory: %s\n", s);
     }
     return s;
 }

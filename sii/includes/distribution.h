@@ -1,7 +1,7 @@
 #ifndef __DISTRIBUTION_H__
 #define __DISTRIBUTION_H__
 
-#include "./parameters.h"
+#include "./arguments.h"
 #include "./constants.h"
 #include "./image.h"
 #include "./imageUtils.h"
