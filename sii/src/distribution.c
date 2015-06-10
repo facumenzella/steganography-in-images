@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "../includes/distribution.h"
 
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size);
@@ -8,14 +9,14 @@ BYTE bytePow(BYTE base, int exponent);
 BYTE ** initializeShadows(int image_size, int n, int k);
 
 void
-distribute(Parameters parameters, main_error *err) {
-	char *file_name = getSecret(parameters);
+distribute(Arguments arguments, main_error *err) {
+	char *file_name = getSecret(arguments);
 	BMPImage bmp = loadImage(file_name, err);
 	BYTE *image = getBMPImage(bmp);
-	char *directory = getDirectory(parameters);
+	char *directory = getDirectory(arguments);
 	int image_size = getImageSize(bmp);
-	int n = getTotalShadows(parameters);
-	int k = getMinShadows(parameters);
+	int n = getTotalAmountOfShadowsToDistributeSecret(arguments);
+	int k = getMinShadowsToRecoverSecret(arguments);
 
 /* step 1 - Use a key to generate a permutation sequence to permute the pixels
 of the secret image.
@@ -37,7 +38,8 @@ of the secret image.
 	}
 	// we are cool, so we continue
 	BYTE **shadows = createLosslessShadows(E, image_size, n, k);
-	// TODO save shadows
+
+	
 }
 
 BYTE*

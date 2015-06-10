@@ -1,5 +1,5 @@
-#ifndef __PARAMETERS_H__
-#define __PARAMETERS_H__
+#ifndef __CMD_H__
+#define __CMD_H__
 
 // stdlib
 #include <stdio.h>
@@ -7,9 +7,10 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "./errors.h"
-#include "./constants.h"
-#include "./env.h"
+#include "errors.h"
+#include "constants.h"
+#include "env.h"
+#include "arguments.h"
 
 #define MIN_REQUIRED_ARGS 5
 #define MAX_ARGS 9
@@ -19,19 +20,6 @@
 #define DIR_MAX_LENGTH 30
 
 #define MODE(s) (strcmp(s, "-d") == 0) ? "distribution" : (strcmp(s, "-r") == 0) ? "recover" : "invalid mode"
-
-// Parameters structure
-typedef struct parameters_t *Parameters;
-
-typedef enum {
-  DISTRIBUTE, RECOVER
-} mode_type;
-
-mode_type getMode(Parameters p);
-char *getSecret(Parameters p);
-int getMinShadows(Parameters p);
-int getTotalShadows(Parameters p);
-char *getDirectory(Parameters p);
 
 // console parameters
 static const char DISTRIBUTE_ARG[] = "--distribute";
@@ -48,10 +36,9 @@ static const char DIR_ARG[] = "-directory";
 static const char S_DIR_ARG[] = "-dir";
 
 // default values
-static const char DIRECTORY_DEFAULT_VALUE[] = "./";
-
+static const char DIRECTORY_DEFAULT_VALUE[] = "../img/";
 
 // functions
-Parameters validateParameters(int argc, char * argv[], parameters_error *error);
+Arguments validateArguments(int argc, char * argv[], arguments_error *error);
 
 #endif

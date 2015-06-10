@@ -1,7 +1,7 @@
 #ifndef __DISTRIBUTION_H__
 #define __DISTRIBUTION_H__
 
-#include <stdlib.h>
+#include "cmd.h"
 #include "math.h"
 #include "parameters.h"
 #include "constants.h"
@@ -9,6 +9,6 @@
 #include "imageUtils.h"
 #include "random.h"
 
-void distribute(Parameters parameters, main_error *err);
+void distribute(Arguments arguments, main_error *err);
 
 #endif
