@@ -7,6 +7,9 @@ void initializeEquations(int** equations, int* n_values, int n_size, int k);
 int** pixelCoefficients(int** equations, int dimension);
 BYTE* reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k);
 BYTE* revealPartialImage(BYTE* partial_image, int partial_image_size);
+void gaussElliminationMethod(int** equations, int** inverseMatrix, int dimension, int i, int j);
+void elliminateValueAt(int** equation, int** inverse, int dimension, int index_1, int index_2, int index_3);
+void divideDiagonals(int** equations, int** inverseMatrix, int dimension);
 
 BYTE*
 revealImage(int* n_values, int n_size, int k, BYTE* shadows_pixel) {
@@ -46,34 +49,42 @@ pixelCoefficients(int** equations, int dimension) { //AKA: Matrix inversion
 	int** inverseMatrix = declareEquations(dimension);
 	int** copied_equations = copySquareMatrix(equations, dimension);
 	identityMatrix(inverseMatrix, dimension);
-	printSquareMatrix(copied_equations, dimension);
 	int i, j, k;
 	for (j = 0; j < dimension; j++) {
 		for (i = dimension - 1; i >= 0; i--) {
 			if (i != j && copied_equations[i][j] != 0) {
-				if (i != 0) {
-					int* new_equation_i = multiplyRowBy(copied_equations[i], dimension, copied_equations[i-1][j]);
-					int* new_inverse_i = multiplyRowBy(inverseMatrix[i], dimension, copied_equations[i-1][j]);
-					inverseMatrix[i] = substractEquations(new_inverse_i, multiplyRowBy(inverseMatrix[i-1], dimension, copied_equations[i][j]), dimension);
-					copied_equations[i] = substractEquations(new_equation_i, multiplyRowBy(copied_equations[i-1], dimension, copied_equations[i][j]), dimension);
-				} else {
-					int* new_equation_i = multiplyRowBy(copied_equations[i], dimension, copied_equations[j][j]);
-					int* new_inverse_i = multiplyRowBy(inverseMatrix[i], dimension, copied_equations[j][j]);
-					inverseMatrix[i] = substractEquations(new_inverse_i, multiplyRowBy(inverseMatrix[j], dimension, copied_equations[i][j]), dimension);
-					copied_equations[i] = substractEquations(new_equation_i, multiplyRowBy(copied_equations[j], dimension, copied_equations[i][j]), dimension);
-				}
+				gaussElliminationMethod(copied_equations, inverseMatrix, dimension, i, j);
 			}
 		}
 	}
-	for (i = 0; i < dimension; i++) {
-		for (j = 0; j < dimension; j++) {
-			if (i == j) {
-				inverseMatrix[i] = divideRowBy(inverseMatrix[i], dimension, copied_equations[i][i]);
-				copied_equations[i] = divideRowBy(copied_equations[i], dimension, copied_equations[i][i]);
-			}
-		}
-	}
+	divideDiagonals(copied_equations, inverseMatrix, dimension);
 	return inverseMatrix;
+}
+
+void
+gaussElliminationMethod(int** equations, int** inverseMatrix, int dimension, int i, int j) {
+	if (i != 0) {
+		elliminateValueAt(equations, inverseMatrix, dimension, i-1, i, j);
+	} else {
+		elliminateValueAt(equations, inverseMatrix, dimension, j, i, j);
+	}
+}
+
+void
+elliminateValueAt(int** equation, int** inverse, int dimension, int index_1, int index_2, int index_3) {
+	int* new_equation_i = multiplyRowBy(equation[index_2], dimension, equation[index_1][index_3]);
+	int* new_inverse_i = multiplyRowBy(inverse[index_2], dimension, equation[index_1][index_3]);
+	inverse[index_2] = substractEquations(new_inverse_i, multiplyRowBy(inverse[index_1], dimension, equation[index_2][index_3]), dimension);
+	equation[index_2] = substractEquations(new_equation_i, multiplyRowBy(equation[index_1], dimension, equation[index_2][index_3]), dimension);
+}
+
+void
+divideDiagonals(int** equations, int** inverseMatrix, int dimension) {
+	int i, j;
+	for (i = 0; i < dimension; i++) {
+		inverseMatrix[i] = divideRowBy(inverseMatrix[i], dimension, equations[i][i]);
+		equations[i] = divideRowBy(equations[i], dimension, equations[i][i]);
+	}
 }
 
 BYTE*
@@ -122,6 +133,10 @@ main(void) {
 	inverse[2][1] = 0;
 	inverse[2][2] = 1;
 	int** ans = pixelCoefficients(matrix, 3);
+	printf("A:\n");
+	printSquareMatrix(matrix, 3);
+	printf("\nA^-1:\n");
 	printByteSquareMatrix(makeModularMatrix(ans, 3), 3);
+	printf("\nA*A^-1:\n");
 	printByteSquareMatrix(multiplyByteSquareMatrices(makeModularMatrix(ans, 3), makeModularMatrix(matrix, 3), 3), 3);
 }
