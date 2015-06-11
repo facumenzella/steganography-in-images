@@ -4,11 +4,11 @@
 
 BYTE* lagrangeInterpolation(int* n_values, int n_size, int k, BYTE* shadows_pixel);
 void initializeEquations(int** equations, int* n_values, int n_size, int k);
-int** pixelCoefficients(int** equations, int dimension);
+int** gaussJordanElliminationMethod(int** equations, int dimension);
 BYTE* reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k);
 BYTE* revealPartialImage(BYTE* partial_image, int partial_image_size);
-void gaussElliminationMethod(int** equations, int** inverseMatrix, int dimension, int i, int j);
-void elliminateValueAt(int** equation, int** inverse, int dimension, int index_1, int index_2, int index_3);
+void elliminateValuesAtColumn(int** equation, int** inverse, int dimension, int pivot);
+void elliminateValues(int** equation, int** inverse, int dimension, int pivot, int direction);
 void divideDiagonals(int** equations, int** inverseMatrix, int dimension);
 
 BYTE*
@@ -44,37 +44,38 @@ initializeEquations(int** equations, int* n_values, int n_size, int k) {
 }
 
 int**
-pixelCoefficients(int** equations, int dimension) { //AKA: Matrix inversion
+gaussJordanElliminationMethod(int** equations, int dimension) { //AKA: Matrix inversion
 	int** inverseMatrix = declareEquations(dimension);
 	int** copied_equations = copySquareMatrix(equations, dimension);
 	identityMatrix(inverseMatrix, dimension);
-	int i, j, k;
-	for (j = 0; j < dimension; j++) {
-		for (i = dimension - 1; i >= 0; i--) {
-			if (i != j && copied_equations[i][j] != 0) {
-				gaussElliminationMethod(copied_equations, inverseMatrix, dimension, i, j);
-			}
-		}
+	int i;
+	for (i = 0; i < dimension; i++) {
+		elliminateValuesAtColumn(copied_equations, inverseMatrix, dimension, i);
 	}
 	divideDiagonals(copied_equations, inverseMatrix, dimension);
 	return inverseMatrix;
 }
 
 void
-gaussElliminationMethod(int** equations, int** inverseMatrix, int dimension, int i, int j) {
-	if (i != 0) {
-		elliminateValueAt(equations, inverseMatrix, dimension, i-1, i, j);
-	} else {
-		elliminateValueAt(equations, inverseMatrix, dimension, j, i, j);
+elliminateValuesAtColumn(int** equations, int** inverse, int dimension, int pivot) {
+	if (equations[pivot][pivot] != 1){
+		inverse[pivot] = divideRowBy(inverse[pivot], dimension, equations[pivot][pivot]);
+		equations[pivot] = divideRowBy(equations[pivot], dimension, equations[pivot][pivot]);
 	}
+	elliminateValues(equations, inverse, dimension, pivot, UP);
+	elliminateValues(equations, inverse, dimension, pivot, DOWN);
 }
 
 void
-elliminateValueAt(int** equation, int** inverse, int dimension, int index_1, int index_2, int index_3) {
-	int* new_equation_i = multiplyRowBy(equation[index_2], dimension, equation[index_1][index_3]);
-	int* new_inverse_i = multiplyRowBy(inverse[index_2], dimension, equation[index_1][index_3]);
-	inverse[index_2] = substractEquations(new_inverse_i, multiplyRowBy(inverse[index_1], dimension, equation[index_2][index_3]), dimension);
-	equation[index_2] = substractEquations(new_equation_i, multiplyRowBy(equation[index_1], dimension, equation[index_2][index_3]), dimension);
+elliminateValues(int** equations, int** inverse, int dimension, int pivot, int direction) {
+	int i = pivot + direction;
+	while(i >= 0 && i < dimension) {
+		if (equations[i][pivot] != 0) {
+			inverse[i] = addEquations(inverse[i], multiplyRowBy(inverse[pivot], dimension, equations[i][pivot]), dimension, NEGATIVE);
+			equations[i] = addEquations(equations[i], multiplyRowBy(equations[pivot], dimension, equations[i][pivot]), dimension, NEGATIVE);
+		}
+		i += direction;
+	}
 }
 
 void
@@ -114,14 +115,14 @@ main(void) {
 		inverse[i] = calloc(3, sizeof(int));
 	}
 	matrix[0][0] = 1;
-	matrix[0][1] = 3;
+	matrix[0][1] = 2;
 	matrix[0][2] = 3;
-	matrix[1][0] = 1;
-	matrix[1][1] = 4;
-	matrix[1][2] = 3;
-	matrix[2][0] = 1;
-	matrix[2][1] = 3;
-	matrix[2][2] = 4;
+	matrix[1][0] = 0;
+	matrix[1][1] = 1;
+	matrix[1][2] = 4;
+	matrix[2][0] = 5;
+	matrix[2][1] = 6;
+	matrix[2][2] = 0;
 	inverse[0][0] = 7;
 	inverse[0][1] = -3;
 	inverse[0][2] = -3;
@@ -131,7 +132,8 @@ main(void) {
 	inverse[2][0] = -1;
 	inverse[2][1] = 0;
 	inverse[2][2] = 1;
-	int** ans = pixelCoefficients(matrix, 3);
+	printSquareMatrix(matrix, 3);
+	int** ans = gaussJordanElliminationMethod(matrix, 3);
 	printf("A:\n");
 	printSquareMatrix(matrix, 3);
 	printf("\nA^-1:\n");

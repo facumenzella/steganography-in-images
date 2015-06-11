@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include "../includes/math.h"
 
-BYTE
-bytePow(BYTE base, int exponent) {
+int
+bytePow(int base, int exponent) {
 	int ans = 1;
 	int i;
 	for (i = 0; i < exponent; i++) {
@@ -33,13 +33,13 @@ multiplicativeInverse(int number) {
 }
 
 int*
-substractEquations(int* equation_2, int* equation_1, int dimension) {
-	int* substracted_equation = calloc(dimension, sizeof(int));
+addEquations(int* equation_2, int* equation_1, int dimension, sign _sign) {
+	int* ans = calloc(dimension, sizeof(int));
 	int i;
 	for (i = 0; i < dimension; i++) {
-		substracted_equation[i] = equation_2[i] - equation_1[i];
+		ans[i] = equation_2[i] + (_sign * equation_1[i]);
 	}
-	return substracted_equation;
+	return ans;
 }
 
 void

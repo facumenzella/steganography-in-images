@@ -4,11 +4,17 @@
 #include "constants.h"
 #include "random.h"
 
-BYTE bytePow(BYTE base, int exponent);
+typedef int sign;
+#define POSITIVE 1
+#define NEGATIVE -1
+#define UP -1
+#define DOWN 1
+
+int bytePow(int base, int exponent);
 int intPow(int base, int exponent);
 int* divideRowBy(int* row, int row_size, int value);
 int multiplicativeInverse(int number);
-int* substractEquations(int* equation_2, int* equation_1, int dimension);
+int* addEquations(int* equation_2, int* equation_1, int dimension, sign _sign);
 void printRow(int* row, int size);
 int* multiplyRowBy(int* row, int row_size, int value);
 void identityMatrix(int** matrix, int dimension);
