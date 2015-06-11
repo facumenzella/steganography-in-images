@@ -24,7 +24,6 @@ revealImage(int* n_values, int n_size, int k, BYTE* shadows_pixel) {
 	return revealPartialImage(coefficients, k);
 }
 
-
 BYTE*
 lagrangeInterpolation(int* n_values, int n_size, int k, BYTE* shadows_pixel) {
 	BYTE* partial_image_section_pixels = calloc(k, sizeof(BYTE));
