@@ -11,7 +11,7 @@ int multiplicativeInverse(int number);
 int* substractEquations(int* equation_2, int* equation_1, int dimension);
 void printRow(int* row, int size);
 int* multiplyRowBy(int* row, int row_size, int value);
-void identityMatrix(int** matrix, int dimension);
+int** identityMatrix(int dimension);
 void printSquareMatrix(int** matrix, int dimension);
 void printByteSquareMatrix(BYTE** matrix, int dimension);
 int** declareEquations(int k);

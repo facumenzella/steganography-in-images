@@ -61,8 +61,9 @@ multiplyRowBy(int* row, int row_size, int value) {
 	return multiplied_row;
 }
 
-void
-identityMatrix(int** matrix, int dimension) {
+int**
+identityMatrix(int dimension) {
+	int** matrix = declareEquations(dimension);
 	int i, j;
 	for (i = 0; i < dimension; i++) {
 		for (j = 0; j < dimension; j++) {
@@ -71,6 +72,7 @@ identityMatrix(int** matrix, int dimension) {
 			}
 		}
 	}
+	return matrix;
 }
 
 void
