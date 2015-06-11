@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include "../includes/reveal.h"
 
@@ -43,41 +44,35 @@ initializeEquations(int** equations, int* n_values, int n_size, int k) {
 int**
 pixelCoefficients(int** equations, int dimension) { //AKA: Matrix inversion
 	int** inverseMatrix = declareEquations(dimension);
+	int** copied_equations = copySquareMatrix(equations, dimension);
 	identityMatrix(inverseMatrix, dimension);
-	printSquareMatrix(equations, dimension);
+	printSquareMatrix(copied_equations, dimension);
 	int i, j, k;
 	for (j = 0; j < dimension; j++) {
 		for (i = dimension - 1; i >= 0; i--) {
-			if (i != j && equations[i][j] != 0) {
+			if (i != j && copied_equations[i][j] != 0) {
 				if (i != 0) {
-					int* new_equation_i = multiplyRowBy(equations[i], dimension, equations[i-1][j]);
-					int* new_inverse_i = multiplyRowBy(inverseMatrix[i], dimension, equations[i-1][j]);
-					inverseMatrix[i] = substractEquations(new_inverse_i, multiplyRowBy(inverseMatrix[i-1], dimension, equations[i][j]), dimension);
-					equations[i] = substractEquations(new_equation_i, multiplyRowBy(equations[i-1], dimension, equations[i][j]), dimension);
+					int* new_equation_i = multiplyRowBy(copied_equations[i], dimension, copied_equations[i-1][j]);
+					int* new_inverse_i = multiplyRowBy(inverseMatrix[i], dimension, copied_equations[i-1][j]);
+					inverseMatrix[i] = substractEquations(new_inverse_i, multiplyRowBy(inverseMatrix[i-1], dimension, copied_equations[i][j]), dimension);
+					copied_equations[i] = substractEquations(new_equation_i, multiplyRowBy(copied_equations[i-1], dimension, copied_equations[i][j]), dimension);
 				} else {
-					int* new_equations_i = multiplyRowBy(equations[i], dimension, equations[j][j]);
-					int* new_inverse_i = multiplyRowBy(inverseMatrix[i], dimension, equations[j][j]);
-					inverseMatrix[i] = substractEquations(new_inverse_i, multiplyRowBy(inverseMatrix[j], dimension, equations[i][j]), dimension);
-					equations[i] = substractEquations(new_equations_i, multiplyRowBy(equations[j], dimension, equations[i][j]), dimension);
+					int* new_equation_i = multiplyRowBy(copied_equations[i], dimension, copied_equations[j][j]);
+					int* new_inverse_i = multiplyRowBy(inverseMatrix[i], dimension, copied_equations[j][j]);
+					inverseMatrix[i] = substractEquations(new_inverse_i, multiplyRowBy(inverseMatrix[j], dimension, copied_equations[i][j]), dimension);
+					copied_equations[i] = substractEquations(new_equation_i, multiplyRowBy(copied_equations[j], dimension, copied_equations[i][j]), dimension);
 				}
 			}
-			printf("-------------------------\n");
-			printSquareMatrix(equations, dimension);
-			printSquareMatrix(inverseMatrix, dimension);
 		}
 	}
 	for (i = 0; i < dimension; i++) {
 		for (j = 0; j < dimension; j++) {
 			if (i == j) {
-				inverseMatrix[i] = divideRowBy(inverseMatrix[i], dimension, equations[i][i]);
-				equations[i] = divideRowBy(equations[i], dimension, equations[i][i]);
+				inverseMatrix[i] = divideRowBy(inverseMatrix[i], dimension, copied_equations[i][i]);
+				copied_equations[i] = divideRowBy(copied_equations[i], dimension, copied_equations[i][i]);
 			}
-			inverseMatrix[i][j] = ((BYTE) inverseMatrix[i][j]) % MAX_BYTE_VALUE;
-			equations[i][j] = ((BYTE) equations[i][j]) % MAX_BYTE_VALUE;
 		}
 	}
-	printSquareMatrix(equations, dimension);
-	printSquareMatrix(inverseMatrix, dimension);
 	return inverseMatrix;
 }
 
@@ -126,6 +121,7 @@ main(void) {
 	inverse[2][0] = -1;
 	inverse[2][1] = 0;
 	inverse[2][2] = 1;
-	// int** ans = pixelCoefficients(matrix, 3);
-	printByteSquareMatrix(multiplyByteSquareMatrices(makeModularMatrix(inverse, 3), makeModularMatrix(matrix, 3), 3), 3);
+	int** ans = pixelCoefficients(matrix, 3);
+	printByteSquareMatrix(makeModularMatrix(ans, 3), 3);
+	printByteSquareMatrix(multiplyByteSquareMatrices(makeModularMatrix(ans, 3), makeModularMatrix(matrix, 3), 3), 3);
 }

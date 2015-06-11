@@ -23,12 +23,12 @@ intPow(int base, int exponent) {
 }
 
 int*
-divideRowBy(int* row, int row_size, BYTE value) {
+divideRowBy(int* row, int row_size, int value) {
 	return multiplyRowBy(row, row_size, multiplicativeInverse(value));
 }
 
-BYTE
-multiplicativeInverse(BYTE number) {
+int
+multiplicativeInverse(int number) {
 	return bytePow(number, MAX_BYTE_VALUE - 2) % MAX_BYTE_VALUE;
 }
 
@@ -52,7 +52,7 @@ printRow(int* row, int size) {
 }
 
 int*
-multiplyRowBy(int* row, int row_size, BYTE value) {
+multiplyRowBy(int* row, int row_size, int value) {
 	int i;
 	int* multiplied_row = calloc(row_size, sizeof(int));
 	for (i = 0; i < row_size; i++) {
@@ -151,6 +151,18 @@ multiplyByteSquareMatrices(BYTE** matrix_1, BYTE** matrix_2, int dimension) {
 		}
 	}
 	return ans;
+}
+
+int**
+copySquareMatrix(int** matrix, int dimension) {
+	int i, j;
+	int** copied_matrix = declareEquations(dimension);
+	for (i = 0; i < dimension; i++) {
+		for (int j = 0; j < dimension; j++) {
+			copied_matrix[i][j] = matrix[i][j];
+		}
+	}
+	return copied_matrix;
 }
 
 BYTE**
