@@ -87,10 +87,15 @@ printSquareMatrix(int** matrix, int dimension) {
 
 void
 printByteSquareMatrix(BYTE** matrix, int dimension) {
+	printByteMatrix(matrix, dimension, dimension);
+}
+
+void
+printByteMatrix(BYTE** matrix, int rows, int columns) {
 	int i, j;
 	printf("\n");
-	for (i = 0; i < dimension; i++) {
-		for (j = 0; j < dimension; j++) {
+	for (i = 0; i < rows; i++) {
+		for (j = 0; j < columns; j++) {
 			printf("%d\t", matrix[i][j]);
 		}
 		printf("\n");
@@ -148,6 +153,34 @@ multiplyByteSquareMatrices(BYTE** matrix_1, BYTE** matrix_2, int dimension) {
 		ans[i][k++] = value_i_j % MAX_BYTE_VALUE;
 		if (k % dimension == 0) {
 			k = 0;
+		}
+	}
+	return ans;
+}
+
+BYTE**
+declareGenericByteMatrix(int rows, int columns) {
+	int i;
+	BYTE** ans = calloc(rows, sizeof(BYTE*));
+	for (int i = 0; i < rows; i++) {
+		ans[i] = calloc(columns, sizeof(BYTE));
+	}
+	return ans;
+}
+
+BYTE**
+multiplyByteMatrices(BYTE** matrix_1, BYTE** matrix_2, int dim_1_i, int dim_1_j, int dim_2_i, int dim_2_j) {
+	int i, j, k, value_i_k;
+	BYTE** ans = declareGenericByteMatrix(dim_1_i, dim_2_j);
+	for (i = 0; i < dim_1_i; i++) {
+		k = 0;
+		while(k < dim_2_j) {
+			value_i_k = 0;
+			for (j = 0; j < dim_1_j; j++) {
+				value_i_k += matrix_1[i][j] * matrix_2[j][k];
+			}
+			ans[i][k] = value_i_k % MAX_BYTE_VALUE;
+			k++;
 		}
 	}
 	return ans;

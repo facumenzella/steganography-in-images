@@ -9,7 +9,6 @@ BYTE* reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k
 BYTE* revealPartialImage(BYTE* partial_image, int partial_image_size);
 void elliminateValuesAtColumn(int** equation, int** inverse, int dimension, int pivot);
 void elliminateValues(int** equation, int** inverse, int dimension, int pivot, int direction);
-void divideDiagonals(int** equations, int** inverseMatrix, int dimension);
 
 BYTE*
 revealImage(int* n_values, int n_size, int k, BYTE* shadows_pixel) {
@@ -52,7 +51,6 @@ gaussJordanElliminationMethod(int** equations, int dimension) { //AKA: Matrix in
 	for (i = 0; i < dimension; i++) {
 		elliminateValuesAtColumn(copied_equations, inverseMatrix, dimension, i);
 	}
-	divideDiagonals(copied_equations, inverseMatrix, dimension);
 	return inverseMatrix;
 }
 
@@ -78,22 +76,13 @@ elliminateValues(int** equations, int** inverse, int dimension, int pivot, int d
 	}
 }
 
-void
-divideDiagonals(int** equations, int** inverseMatrix, int dimension) {
-	int i, j;
-	for (i = 0; i < dimension; i++) {
-		inverseMatrix[i] = divideRowBy(inverseMatrix[i], dimension, equations[i][i]);
-		equations[i] = divideRowBy(equations[i], dimension, equations[i][i]);
-	}
-}
-
 BYTE*
 revealPartialImage(BYTE* partial_image, int partial_image_size) {
 	BYTE* result = calloc(partial_image_size, sizeof(BYTE));
 	int i, result_index = 0;
 	for (i = 0; i < partial_image_size; i++, result_index++) {
 		BYTE b = partial_image[i];
-		if (b == 250) {
+		if (b == MAX_BYTE_VALUE - 1) {
 			BYTE following_b = partial_image[++i];
 			result[result_index] = b + following_b;
 		} else {
@@ -105,39 +94,41 @@ revealPartialImage(BYTE* partial_image, int partial_image_size) {
 
 int
 main(void) {
+	// http://www.wolframalpha.com/widgets/view.jsp?id=2de311966212471dec23077dd840840d
+	// http://www.gregthatcher.com/Mathematics/GaussJordan.aspx
 	int** matrix = calloc(3, sizeof(int*));
 	int i;
 	for (i = 0; i < 3; i++) {
 		matrix[i] = calloc(3, sizeof(int));
 	}
-	int** inverse = calloc(3, sizeof(int*));
+	BYTE** results = calloc(3, sizeof(BYTE*));
 	for (i = 0; i < 3; i++) {
-		inverse[i] = calloc(3, sizeof(int));
+		results[i] = calloc(1, sizeof(BYTE));
 	}
+	matrix[0] = calloc(3, sizeof(int));
 	matrix[0][0] = 1;
-	matrix[0][1] = 2;
-	matrix[0][2] = 3;
-	matrix[1][0] = 0;
-	matrix[1][1] = 1;
-	matrix[1][2] = 4;
-	matrix[2][0] = 5;
-	matrix[2][1] = 6;
-	matrix[2][2] = 0;
-	inverse[0][0] = 7;
-	inverse[0][1] = -3;
-	inverse[0][2] = -3;
-	inverse[1][0] = -1;
-	inverse[1][1] = 1;
-	inverse[1][2] = 0;
-	inverse[2][0] = -1;
-	inverse[2][1] = 0;
-	inverse[2][2] = 1;
+	matrix[0][1] = 1;
+	matrix[0][2] = 1;
+	matrix[1][0] = 4;
+	matrix[1][1] = 2;
+	matrix[1][2] = 1;
+	matrix[2][0] = 9;
+	matrix[2][1] = 3;
+	matrix[2][2] = 1;
+	results[0][0] = 83;
+	results[1][0] = 123;
+	results[2][0] = 147;
 	printSquareMatrix(matrix, 3);
 	int** ans = gaussJordanElliminationMethod(matrix, 3);
 	printf("A:\n");
 	printSquareMatrix(matrix, 3);
+	printf("Results:\n");
+	printByteMatrix(results, 3, 1);
 	printf("\nA^-1:\n");
-	printByteSquareMatrix(makeModularMatrix(ans, 3), 3);
+	BYTE** modular_ans = makeModularMatrix(ans, 3);
+	printByteSquareMatrix(modular_ans, 3);
 	printf("\nA*A^-1:\n");
 	printByteSquareMatrix(multiplyByteSquareMatrices(makeModularMatrix(ans, 3), makeModularMatrix(matrix, 3), 3), 3);
+	printf("COEFFICIENTS (A^-1*Results):\n");
+	printByteMatrix(multiplyByteMatrices(modular_ans, results, 3, 3, 3, 1), 3, 1);
 }
