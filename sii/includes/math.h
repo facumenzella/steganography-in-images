@@ -29,5 +29,7 @@ int** multiplySquareMatrices(int** matrix_1, int** matrix_2, int dimension);
 BYTE** multiplyByteSquareMatrices(BYTE** matrix_1, BYTE** matrix_2, int dimension);
 int** copySquareMatrix(int** matrix, int dimension);
 BYTE** makeModularMatrix(int** matrix, int dimension);
+void setValuesToIntMatrix(int** matrix, int rows, int columns, int value);
+void setValuesToByteMatrix(BYTE** matrix, int rows, int columns, BYTE value);
 
 #endif

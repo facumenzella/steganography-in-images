@@ -2,35 +2,44 @@
 #include <stdio.h>
 #include "../includes/reveal.h"
 
-BYTE* lagrangeInterpolation(int* n_values, int n_size, int k, BYTE* shadows_pixel);
 void initializeEquations(int** equations, int* n_values, int n_size, int k);
 int** gaussJordanElliminationMethod(int** equations, int dimension);
 BYTE* reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k);
-BYTE* revealPartialImage(BYTE* partial_image, int partial_image_size);
 void elliminateValuesAtColumn(int** equation, int** inverse, int dimension, int pivot);
 void elliminateValues(int** equation, int** inverse, int dimension, int pivot, int direction);
+BYTE* revealPartialImage(BYTE* partial_image, int partial_image_size);
 
 BYTE*
-revealImage(int* n_values, int n_size, int k, BYTE* shadows_pixel) {
-	//Repetir hasta consumir todos los bytes de las sombras
-		//Agarrar el siguiente byte de cada una de las shadows
-		//hacer la interpolacion de lagrange para sacar los coeficientes, voy construyendo  partial_image
-	//pasar partial_image por revealPartialImage
-	//revertir la permutación
-
-	BYTE* coefficients = lagrangeInterpolation(n_values, n_size, k, shadows_pixel);
-	// Acá falta la "despermutación" de todo!!
-	return revealPartialImage(coefficients, k);
-}
-
-BYTE*
-lagrangeInterpolation(int* n_values, int n_size, int k, BYTE* shadows_pixel) {
-	BYTE* partial_image_section_pixels = calloc(k, sizeof(BYTE));
+revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_size, int seed) {
+	int i, j, l, partial_image_index;
+	BYTE** shadows_i_pixels = declareGenericByteMatrix(n_size, 0);
+	BYTE* partial_image = calloc(k*shadow_size, sizeof(BYTE));
+	BYTE** inverseMatrix;
+	BYTE** coefficients;
 	int** equations = declareEquations(k);
-	initializeEquations(equations, n_values, n_size, k);
-
-	return partial_image_section_pixels;
-}
+	partial_image_index = 0;
+	for (j = 0; j < shadow_size; j++) {
+		for (i = 0; i < n_size; i++) {
+			shadows_i_pixels[i][0] = shadows_pixels[i][j];
+		}
+		initializeEquations(equations, n_values, n_size, k);
+		inverseMatrix = makeModularMatrix(gaussJordanElliminationMethod(equations, n_size), n_size);
+		coefficients = multiplyByteMatrices(inverseMatrix, shadows_i_pixels, n_size, n_size, n_size, 1); // Se supone que a esta altura, n = k par que quede la matriz cuadrada.
+		for (l = 0; l < k; l++) {
+			partial_image[partial_image_index + l] = coefficients[l][0];
+		}
+		partial_image_index = l + 1;
+		setValuesToByteMatrix(shadows_i_pixels, n_size, 0, 0);
+	}
+ 	//Repetir hasta consumir todos los bytes de las sombras
+ 		//Agarrar el siguiente byte de cada una de las shadows
+ 		//hacer la interpolacion de lagrange para sacar los coeficientes, voy construyendo  partial_image
+ 	//pasar partial_image por revealPartialImage
+ 	//revertir la permutación
+ 	// Acá falta la "despermutación" de todo!!
+ 	BYTE* permuted_image = revealPartialImage(partial_image, k);
+ 	return permuted_image;
+ }
 
 void
 initializeEquations(int** equations, int* n_values, int n_size, int k) {
@@ -78,7 +87,7 @@ elliminateValues(int** equations, int** inverse, int dimension, int pivot, int d
 
 BYTE*
 revealPartialImage(BYTE* partial_image, int partial_image_size) {
-	BYTE* result = calloc(partial_image_size, sizeof(BYTE));
+	BYTE* result = calloc(partial_image_size*2, sizeof(BYTE));
 	int i, result_index = 0;
 	for (i = 0; i < partial_image_size; i++, result_index++) {
 		BYTE b = partial_image[i];

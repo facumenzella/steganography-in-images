@@ -91,6 +91,26 @@ printByteSquareMatrix(BYTE** matrix, int dimension) {
 }
 
 void
+setValuesToByteMatrix(BYTE** matrix, int rows, int columns, BYTE value) {
+	int i, j;
+	for (i = 0; i < rows; i++) {
+		for (j = 0; j < columns; j++) {
+			matrix[i][j] = value;
+		}
+	}
+}
+
+void
+setValuesToIntMatrix(int** matrix, int rows, int columns, int value) {
+	int i, j;
+	for (i = 0; i < rows; i++) {
+		for (j = 0; j < columns; j++) {
+			matrix[i][j] = value;
+		}
+	}
+}
+
+void
 printByteMatrix(BYTE** matrix, int rows, int columns) {
 	int i, j;
 	printf("\n");
