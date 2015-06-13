@@ -1,7 +1,8 @@
 #ifndef __CONSTANTS_H__
 #define __CONSTANTS_H__
 
-typedef unsigned char BYTE;
+#include "byte.h"
+
 #define MAX_BYTE_VALUE 251
 
 #ifndef BOOLEAN
