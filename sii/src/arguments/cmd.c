@@ -1,5 +1,6 @@
 #include "../../includes/cmd.h"
 #include "../../includes/arguments.h"
+#include "../../includes/imageUtils.h"
 
 boolean invalidAmountOfArgs(int args);
 char* defaultDir();
@@ -16,6 +17,7 @@ boolean isValidWithinRelatedArguemtents(Arguments arguments);
 Arguments
 validateArguments(int argc, char *argv[], arguments_error *error) {
   int ARGS = argc - 1; // we do not need the first argument
+    boolean nWasProvided = FALSE;
   if(invalidAmountOfArgs(ARGS)) {
       setError(error, QTY_ARGS_ERROR);
       return NULL;
@@ -23,7 +25,6 @@ validateArguments(int argc, char *argv[], arguments_error *error) {
     Arguments arguments = newArguments();
     
     printf("\n%s\n", "Starting to read console arguments...");
-    
     setMode(arguments, validateModeType(argv[1], error));
     if (*error != NULL) {
 		return NULL;
@@ -40,7 +41,7 @@ validateArguments(int argc, char *argv[], arguments_error *error) {
         d_printf("%s\n", "Starting to read optional console arguments...");
         if (getMode(arguments) == DISTRIBUTE) {
             // We need to check for n argument
-            boolean nWasProvided = checkIfTotalAmountOfShadowsWasProvided(argv[6], argv[7], error);
+            nWasProvided = checkIfTotalAmountOfShadowsWasProvided(argv[6], argv[7], error);
             if (nWasProvided == TRUE) {
                 // n was provided
                 setTotalAmountOfShadowsToDistributeSecret(arguments,
@@ -66,6 +67,13 @@ validateArguments(int argc, char *argv[], arguments_error *error) {
 		setError(error, K_GREATER_THAN_N);
 		return NULL;
 	}
+    
+    if (nWasProvided == FALSE) {
+        // we need to count the amount of shadows from the directory
+        printf("N was not provided, so we will take the number of bmp images in the directory\n");
+        setTotalAmountOfShadowsToDistributeSecret(arguments,
+                                                  countImagesInDirectory(getDirectory(arguments), error));
+    }
 	return arguments;
 }
 
