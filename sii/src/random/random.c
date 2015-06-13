@@ -1,7 +1,6 @@
 #include "../../includes/random.h"
 
 double randnormalize(void);
-void randomize(int num);
 
 long int
 getRandom(long int max) {
@@ -15,5 +14,5 @@ randnormalize(void) {
 
 void
 randomize(int num) {
-  srand((int) num);
+  srand(num);
 }

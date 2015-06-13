@@ -57,17 +57,6 @@ convertImageToArrayWithoutLoss(BYTE* image, int image_size) {
 	return converted_image;
 }
 
-void
-permutePixels(int n, BYTE* image) {
-	int i;
-	for (i = n - 1; i > 0; i--) {
-		long int random = getRandom(i);
-		BYTE pivot = image[random];
-		image[random] = image[i];
-		image[i] = pivot;
-	}
-}
-
 BYTE**
 createLosslessShadows(unsigned char* image, int image_size, int n, int k) {
 	int shadow_pixel_index = 0;
