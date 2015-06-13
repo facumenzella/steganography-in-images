@@ -16,11 +16,11 @@ main(int argc, char * argv[]) {
   main_error err;
   switch (getMode(arguments)) {
     case DISTRIBUTE:
-    d_printf("%s\n", DISTRIBUTE_WELCOME_MSG);
+    printf("%s\n", DISTRIBUTE_WELCOME_MSG);
     distribute(arguments, &err);
     break;
     case RECOVER:
-    d_printf("%s\n", RECOVER_WELCOME_MSG);
+    printf("%s\n", RECOVER_WELCOME_MSG);
     break;
   }
 

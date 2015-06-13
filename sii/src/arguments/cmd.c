@@ -22,7 +22,7 @@ validateArguments(int argc, char *argv[], arguments_error *error) {
   }
     Arguments arguments = newArguments();
     
-    d_printf("\n%s\n", "Starting to read console arguments...");
+    printf("\n%s\n", "Starting to read console arguments...");
     
     setMode(arguments, validateModeType(argv[1], error));
     if (*error != NULL) {

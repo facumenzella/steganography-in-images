@@ -19,7 +19,7 @@ boolean isBMP(char * path);
 
 BMPImage
 loadImage(char *path, io_error *err) {
-  printf("Trying to open:%s\n", path);
+  d_printf("Trying to open:%s\n", path);
   int fileSize = 0, imageOffset = 0, imageSize = -1;
   BYTE *header = NULL, *image = NULL;
   FILE *file = NULL;
