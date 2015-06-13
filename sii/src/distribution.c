@@ -1,12 +1,12 @@
 #include "../includes/distribution.h"
 
-BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size);
+BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size);
+BYTE* convertImageToArrayWithLoss(BYTE* image, int image_size);
 void permutePixels(int n, BYTE* image);
 BYTE** createLosslessShadows(unsigned char* image, int image_size, int n, int k);
 void evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, int k);
 BYTE ** initializeShadows(int image_size, int n, int k);
 void hideInformation(BMPImage shadowImage, BYTE *toHide, int to_hide_size, main_error *err);
-
 
 void
 distribute(Arguments arguments, main_error *err) {
@@ -47,8 +47,22 @@ of the secret image.
 }
 
 BYTE*
-convertImageToArrayWithoutLoss(BYTE* image, int image_size) {
+convertImageToArrayWithLoss(BYTE* image, int image_size) {
 	BYTE* converted_image = calloc(image_size, sizeof(BYTE));
+	int i, j = 0;
+	for (i = 0; i < image_size; i++) {
+		if (image[i] >= 250) {
+			converted_image[j++] = 250;
+		} else {
+			converted_image[j++] = image[i];
+		}
+	}
+	return converted_image;
+}
+
+BYTE*
+convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size) {
+	BYTE* converted_image = calloc(image_size*2, sizeof(BYTE));
 	int i, j = 0;
 	for (i = 0; i < image_size; i++) {
 		if (image[i] >= 250) {
@@ -58,6 +72,8 @@ convertImageToArrayWithoutLoss(BYTE* image, int image_size) {
 			converted_image[j++] = image[i];
 		}
 	}
+	*new_image_size = j;
+	realloc(converted_image, new_image_size);
 	return converted_image;
 }
 
@@ -67,7 +83,7 @@ createLosslessShadows(BYTE* image, int image_size, int n, int k) {
 	// step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
 	BYTE* section = calloc(k, sizeof(BYTE));
 	BYTE** shadows = initializeShadows(image_size, n, k);
-    int i;
+	int i;
 
 	// step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
 	for (i = 0; i < image_size; i++) {
@@ -84,9 +100,9 @@ createLosslessShadows(BYTE* image, int image_size, int n, int k) {
 
 void
 evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, int k) {
-	int i, j;
+	int i, j, ans;
 	for (i = 1; i <= n; i++) {
-		int ans = 0;
+		ans = 0;
 		for (j = 0; j < k; j++) {
 			ans += intPow(i, j);
 		}
@@ -102,7 +118,7 @@ BYTE **
 initializeShadows(int image_size, int n, int k) {
 	BYTE** shadows = calloc(n, sizeof(BYTE *)); // aka unsigned char*
 	int shadow_size = image_size/k;
-	int i = 0;
+	int i;
 	for (i = 0; i < n; ++i) {
 		shadows[i] = calloc(shadow_size, sizeof(BYTE));
 	}
