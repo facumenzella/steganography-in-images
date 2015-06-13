@@ -1,5 +1,7 @@
 #include "../../includes/arguments.h"
 
+#define MODE(m) (m == DISTRIBUTE) ? "distribute" : "recover"
+
 typedef struct arguments_t {
     mode_type mode;
     char *secret;
@@ -24,6 +26,7 @@ getMode(Arguments p) {
 void
 setMode(Arguments s, mode_type mode) {
     s->mode = mode;
+    printf("Setting mode to %s\n", MODE(mode));
 }
 
 char *getSecret(Arguments p) {
@@ -33,6 +36,7 @@ char *getSecret(Arguments p) {
 void
 setSecret(Arguments p, char *secret) {
     p->secret = secret;
+    printf("Setting secret to %s\n", secret);
 }
 
 int getMinShadowsToRecoverSecret(Arguments p) {
@@ -42,6 +46,7 @@ int getMinShadowsToRecoverSecret(Arguments p) {
 void
 setMinShadowsToRecoverSecret(Arguments p, int min) {
     p->minShadowsToRecoverSecret = min;
+    printf("Setting Min shadows(k) to %d\n", min);
 }
 
 
@@ -52,6 +57,7 @@ int getTotalAmountOfShadowsToDistributeSecret(Arguments p) {
 void
 setTotalAmountOfShadowsToDistributeSecret(Arguments p, int total) {
     p->totalAmountOfShadowsToDistributeSecret = total;
+    printf("Setting Total amount of shadows(n) to %d\n", total);
 }
 
 char *getDirectory(Arguments p) {
@@ -61,5 +67,6 @@ char *getDirectory(Arguments p) {
 void
 setDirectory(Arguments p, char *dir) {
     p->directory = dir;
+    printf("Setting directory %s\n", dir);
 }
 
