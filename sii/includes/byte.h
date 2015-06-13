@@ -4,6 +4,6 @@
 typedef unsigned char BYTE;
 
 int getBit(BYTE byte, int whichBit);
-BYTE overrideLSB(BYTE byte, int bit);
+BYTE overrideLessSignificantBit(BYTE byte, int bit);
 
 #endif

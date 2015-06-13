@@ -10,6 +10,6 @@ getBit(BYTE byte, int whichBit)
 }
 
 BYTE
-overrideLSB(BYTE byte, int bit) {
+overrideLessSignificantBit(BYTE byte, int bit) {
   return (~1 & byte) | bit;
 }
