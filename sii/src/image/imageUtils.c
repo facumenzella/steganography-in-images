@@ -8,6 +8,7 @@ static const int IMAGE_SIZE_OFFSET = 34; // Not working, so we will use the foll
 static const int IMAGE_HORIZONTAL_RESOLUTION = 18;
 static const int IMAGE_VERTICAL_RESOLUTION = 22;
 
+char* getNameFromPath(char const *path);
 void readFileSize(FILE *file, int *fileSize);
 void readImageOffset(FILE *file, int *imageOffset);
 void readImageSize(FILE *file, int *imageSize);
@@ -19,118 +20,121 @@ boolean isBMP(char * path);
 
 BMPImage
 loadImage(char *path, io_error *err) {
-  d_printf("Trying to open:%s\n", path);
-  int fileSize = 0, imageOffset = 0, imageSize = -1;
-  BYTE *header = NULL, *image = NULL;
-  FILE *file = NULL;
-  file = fopen(path, READ_BINARY_MODE);
-	if (file == NULL) {
-    d_printf("could not open: %s\n", path);
-    setError(err, COULD_NOT_OPEN_FILE_ERROR);
-    freeWhatNeedsToBeFree(header, image, file);
-    return NULL;
-	}
-
-  readFileSize(file, &fileSize);
-  readImageOffset(file, &imageOffset);
-  readImageSize(file, &imageSize);
-
-  header = calloc(imageOffset, sizeof(BYTE));
-
-  if (header == NULL) {
-    setError(err, CALLOC_ERROR);
-    freeWhatNeedsToBeFree(header, image, file);
-		return NULL;
-	}
-  readHeader(file, header, imageOffset);
-
-  image = calloc(imageSize, sizeof(BYTE));
-  if (image == NULL) {
-    setError(err, CALLOC_ERROR);
-    freeWhatNeedsToBeFree(header, image, file);
-		return NULL;
-	}
-  readImage(file, imageOffset, imageSize, image, err);
-  return initBMPImage(path, fileSize, imageOffset, imageSize, header, image, err);
+    d_printf("Trying to open:%s\n", path);
+    int fileSize = 0, imageOffset = 0, imageSize = -1;
+    BYTE *header = NULL, *image = NULL;
+    char * imageName;
+    FILE *file = NULL;
+    file = fopen(path, READ_BINARY_MODE);
+    if (file == NULL) {
+        d_printf("could not open: %s\n", path);
+        setError(err, COULD_NOT_OPEN_FILE_ERROR);
+        freeWhatNeedsToBeFree(header, image, file);
+        return NULL;
+    } else {
+        imageName = getNameFromPath(path);
+    }
+    
+    readFileSize(file, &fileSize);
+    readImageOffset(file, &imageOffset);
+    readImageSize(file, &imageSize);
+    
+    header = calloc(imageOffset, sizeof(BYTE));
+    
+    if (header == NULL) {
+        setError(err, CALLOC_ERROR);
+        freeWhatNeedsToBeFree(header, image, file);
+        return NULL;
+    }
+    readHeader(file, header, imageOffset);
+    
+    image = calloc(imageSize, sizeof(BYTE));
+    if (image == NULL) {
+        setError(err, CALLOC_ERROR);
+        freeWhatNeedsToBeFree(header, image, file);
+        return NULL;
+    }
+    readImage(file, imageOffset, imageSize, image, err);
+    return initBMPImage(imageName   , fileSize, imageOffset, imageSize, header, image, err);
 }
 
 void
 saveImage(BMPImage image, char *path, io_error *err) {
     int offset = getOffset(image);
-	int fileSize = getFilesize(image);
-	FILE * file;
-
+    int fileSize = getFilesize(image);
+    FILE * file;
+    
     char *fullPath = calloc(strlen(path) + strlen(getFilename(image)), sizeof(char));
     strcat(fullPath, path);
     strcat(fullPath, getFilename(image));
-
+    
     d_printf("Trying to save %s\n", fullPath);
-
-	file = fopen(fullPath, WRITE_BINARY_MODE);
-	if(file == NULL) {
-    setError(err, COULD_NOT_OPEN_FILE_ERROR);
-    return;
-	}
-
-	fwrite(getHeader(image), sizeof(BYTE), offset, file);
-	fwrite(getBMPImage(image), sizeof(BYTE), getImageSize(image), file);
-
-	fclose(file);
+    
+    file = fopen(fullPath, WRITE_BINARY_MODE);
+    if(file == NULL) {
+        setError(err, COULD_NOT_OPEN_FILE_ERROR);
+        return;
+    }
+    
+    fwrite(getHeader(image), sizeof(BYTE), offset, file);
+    fwrite(getBMPImage(image), sizeof(BYTE), getImageSize(image), file);
+    
+    fclose(file);
 }
 
 BMPImage*
 loadImages(char *dir, int n, io_error *err) {
-  d_printf("Fetching images from %s\n", dir);
-  DIR *pwd = NULL;
-  NEXT_DIR curr = NULL;
-  int imagesRead = 0;
-  BMPImage *shadows = calloc(n, sizeof(BMPImage*));
-  if((pwd = opendir(dir)) == NULL) {
-    setError(err, COULD_NOT_OPEN_DIR_ERROR);
-    return NULL;
-  }
-
-  while((curr = readdir(pwd)) != NULL && imagesRead < n) {
-    char *fullPath = calloc(strlen(curr->d_name) + strlen(dir) + 2, sizeof(char));
-		if (fullPath == NULL) {
+    d_printf("Fetching images from %s\n", dir);
+    DIR *pwd = NULL;
+    NEXT_DIR curr = NULL;
+    int imagesRead = 0;
+    BMPImage *shadows = calloc(n, sizeof(BMPImage*));
+    if((pwd = opendir(dir)) == NULL) {
+        setError(err, COULD_NOT_OPEN_DIR_ERROR);
+        return NULL;
+    }
+    
+    while((curr = readdir(pwd)) != NULL && imagesRead < n) {
+        char *fullPath = calloc(strlen(curr->d_name) + strlen(dir) + 2, sizeof(char));
+        if (fullPath == NULL) {
             setError(err, CALLOC_ERROR);
             return NULL;
-		}
-    // we initialize the fullpath with the directory path
-    strncat(fullPath, dir, strlen(dir));
-    // we append '/' to the end of the path if needed
-    if(dir[strlen(dir) - 1] != '/') {
-				strncat(fullPath, "/", 1);
-		}
-    // we append the file name to the path
-    strncat(fullPath, curr->d_name, strlen(curr->d_name));
-
-    // now we want to check that we only open files
-    if(isDir(fullPath) == FALSE) {
-      // its a file not a directory
-      if (isBMP(fullPath)) {
-        BMPImage shadowImage = loadImage(fullPath, err);
-        d_printf("\topening %s \n", getFilename(shadowImage));
-        if (*err != NULL) {
-            closedir(pwd);
-        	free(fullPath);
-        	return NULL;
         }
-        BMPImage i = clone(shadowImage, err);
-        if (*err != NULL || i == NULL) {
-            closedir(pwd);
-        	free(fullPath);
-        	return NULL;
+        // we initialize the fullpath with the directory path
+        strncat(fullPath, dir, strlen(dir));
+        // we append '/' to the end of the path if needed
+        if(dir[strlen(dir) - 1] != '/') {
+            strncat(fullPath, "/", 1);
         }
-        shadows[imagesRead++] = i;
-      }
+        // we append the file name to the path
+        strncat(fullPath, curr->d_name, strlen(curr->d_name));
+        
+        // now we want to check that we only open files
+        if(isDir(fullPath) == FALSE) {
+            // its a file not a directory
+            if (isBMP(fullPath)) {
+                BMPImage shadowImage = loadImage(fullPath, err);
+                d_printf("\topening %s \n", getFilename(shadowImage));
+                if (*err != NULL) {
+                    closedir(pwd);
+                    free(fullPath);
+                    return NULL;
+                }
+                BMPImage i = clone(shadowImage, err);
+                if (*err != NULL || i == NULL) {
+                    closedir(pwd);
+                    free(fullPath);
+                    return NULL;
+                }
+                shadows[imagesRead++] = i;
+            }
+        }
     }
-  }
-  if (imagesRead < n) {
-    setError(err, NOT_ENOUGH_SHADOWS_ERROR);
-    return NULL;
-  }
-  return shadows;
+    if (imagesRead < n) {
+        setError(err, NOT_ENOUGH_SHADOWS_ERROR);
+        return NULL;
+    }
+    return shadows;
 }
 
 int
@@ -170,10 +174,19 @@ countImagesInDirectory(char *dir, io_error *err) {
 }
 
 // Private functions
+
+char *
+getNameFromPath(char const *path) {
+    const char ch = '/';
+    char *ret;
+    ret = strrchr(path, ch);
+    return &ret[1];
+}
+
 void
 readFileSize(FILE *file, int *fileSize) {
     fseek(file, FILE_SIZE_OFFSET, SEEK_SET);
-	fread(fileSize, sizeof(int), 1, file);
+    fread(fileSize, sizeof(int), 1, file);
     d_printf("\t file size: %d - read offset %#010x from the beginning of file\n", *fileSize, FILE_SIZE_OFFSET);
     rewind(file);
 }
@@ -203,37 +216,37 @@ readImageSize(FILE *file, int *imageSize) {
 
 void
 readHeader(FILE *file, BYTE *header, int headerSize) {
-  rewind(file);
-  fread(header, sizeof(BYTE), headerSize, file);
-  rewind(file);
+    rewind(file);
+    fread(header, sizeof(BYTE), headerSize, file);
+    rewind(file);
 }
 
 void
 readImage(FILE *file, int imageOffset, int imageSize, BYTE *image, io_error *err) {
-  fseek(file, imageOffset + 1, SEEK_SET);
-  fread(image, sizeof(BYTE), imageSize, file);
-  rewind(file);
+    fseek(file, imageOffset + 1, SEEK_SET);
+    fread(image, sizeof(BYTE), imageSize, file);
+    rewind(file);
 }
 
 void
 freeWhatNeedsToBeFree(BYTE *header, BYTE *image, FILE *file) {
-  if (file != NULL) {
-    fclose(file);
-  }
-  if (header != NULL) {
-    free(header);
-  }
-  if (image != NULL) {
-    free(image);
-  }
+    if (file != NULL) {
+        fclose(file);
+    }
+    if (header != NULL) {
+        free(header);
+    }
+    if (image != NULL) {
+        free(image);
+    }
 }
 
 boolean
 isBMP(char * path) {
-  return strstr(path, BMP) != NULL;
+    return strstr(path, BMP) != NULL;
 }
 
 boolean
 isDir(char *path) {
-  return (opendir(path) != NULL);
+    return (opendir(path) != NULL);
 }
