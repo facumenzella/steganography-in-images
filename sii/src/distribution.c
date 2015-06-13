@@ -1,12 +1,12 @@
-#include <stdlib.h>
 #include "../includes/distribution.h"
 
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size);
 void permutePixels(int n, BYTE* image);
 BYTE** createLosslessShadows(unsigned char* image, int image_size, int n, int k);
 void evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, int k);
-BYTE bytePow(BYTE base, int exponent);
 BYTE ** initializeShadows(int image_size, int n, int k);
+void hideInformation(BMPImage shadowImage, BYTE *toHide, int to_hide_size, main_error *err);
+
 
 void
 distribute(Arguments arguments, main_error *err) {
@@ -32,14 +32,18 @@ of the secret image.
 	BYTE *E = convertImageToArrayWithoutLoss(image, image_size);
 
 	BMPImage *shadowImages = loadImages(directory, n, err);
-	if (*err || shadowImages == NULL) {
+	if (shadowImages == NULL) {
 		d_printf("%s\n", *err);
 		return; // we fucked up.
 	}
+    d_printf("We have loaded the shadows\n");
 	// we are cool, so we continue
 	BYTE **shadows = createLosslessShadows(E, image_size, n, k);
 
-	
+	for (int i = 0; i < n; i++) {
+		hideInformation(shadowImages[i], shadows[i], image_size/k, err);
+	}
+	d_printf("We are done here\n");
 }
 
 BYTE*
@@ -69,12 +73,12 @@ permutePixels(int n, BYTE* image) {
 }
 
 BYTE**
-createLosslessShadows(unsigned char* image, int image_size, int n, int k) {
+createLosslessShadows(BYTE* image, int image_size, int n, int k) {
 	int shadow_pixel_index = 0;
 	// step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
 	BYTE* section = calloc(k, sizeof(BYTE));
 	BYTE** shadows = initializeShadows(image_size, n, k);
-		int i;
+    int i;
 
 	// step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
 	for (i = 0; i < image_size; i++) {
@@ -101,13 +105,35 @@ evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, in
 	}
 }
 
+/*
+ * This method assumes that image_size/k is an integer
+ */
+
 BYTE **
 initializeShadows(int image_size, int n, int k) {
-	BYTE** shadows = calloc(n, sizeof(BYTE *));
+	BYTE** shadows = calloc(n, sizeof(BYTE *)); // aka unsigned char*
 	int shadow_size = image_size/k;
 	int i = 0;
 	for (i = 0; i < n; ++i) {
 		shadows[i] = calloc(shadow_size, sizeof(BYTE));
 	}
 	return shadows;
+}
+
+void
+hideInformation(BMPImage shadowImage, BYTE *toHide, int size_to_hide, main_error *err) {
+	BYTE *shadowImage_bytes = getBMPImage(shadowImage);
+    int shadow_size = getImageSize(shadowImage);
+	int bi = 0; // for iterating over shadowImage_bytes
+	for (int i = 0; i < size_to_hide; i++) {
+		// we iterate over the bytes to hide
+		BYTE byte_toHide = toHide[i];
+		for (int j = 0; j < 8; j++) {
+			// we iterate over the bits of the byte to hide
+			int bit = getBit(byte_toHide, j);
+			BYTE shadowImage_byte = shadowImage_bytes[bi];
+			shadowImage_bytes[bi++] = overrideLSB(shadowImage_byte, bit);
+		}
+	}
+
 }
