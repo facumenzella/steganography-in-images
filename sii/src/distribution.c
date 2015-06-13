@@ -78,7 +78,7 @@ createLosslessShadows(unsigned char* image, int image_size, int n, int k) {
 		int i;
 
 	// step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
-	for (i = 0; i < sizeof(image); i++) {
+	for (i = 0; i < image_size; i++) {
 		if (i % k == 0) {
 			// step 4 - Generate n pixels for the n shadow images
 			evaluateSection(section, shadows, shadow_pixel_index, n, k);
