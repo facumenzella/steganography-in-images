@@ -138,7 +138,7 @@ hideInformation(BMPImage shadowImage, BYTE *toHide, int size_to_hide, main_error
 			// we iterate over the bits of the byte to hide
 			int bit = getBit(byte_toHide, j);
 			BYTE shadowImage_byte = shadowImage_bytes[bi];
-			shadowImage_bytes[bi++] = overrideLSB(shadowImage_byte, bit);
+			shadowImage_bytes[bi++] = overrideLessSignificantBit(shadowImage_byte, bit);
 		}
 	}
 }
