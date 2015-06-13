@@ -43,7 +43,7 @@ initializeEquations(int** equations, int* n_values, int n_size, int k) {
 	int i, j;
 	for (i = 0; i < k; i++) {
 		for (j = 0; j < k; j++) {
-			equations[i][j] = intPow(n_values[i], k - j - 1);
+			equations[i][j] = intPow(n_values[i], j);
 		}
 	}
 }
