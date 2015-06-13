@@ -18,8 +18,7 @@ static const char K_ARG_ERROR[] = "You have to provide a minimum number of shado
 static const char K_GREATER_THAN_N[] = "K must be lower or equal than N";
 static const char K_LOWER_THAN_2[] = "K must be at least 2";
 static const char N_LOWER_THAN_2[] = "N must be at least 2";
-
-
+static const char DIR_INVALID_ARGUMENT[] = "You have to provide either --directory or -dir. We will set the default directory";
 // IO errors
 static const char COULD_NOT_OPEN_FILE_ERROR[] = "We could not open the file you provided";
 static const char COULD_NOT_OPEN_DIR_ERROR[] = "We could not open the directory you provided";

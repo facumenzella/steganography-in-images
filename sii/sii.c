@@ -23,7 +23,6 @@ main(int argc, char * argv[]) {
     printf("%s\n", RECOVER_WELCOME_MSG);
     break;
   }
-
 }
 
 

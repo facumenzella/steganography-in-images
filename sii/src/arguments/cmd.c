@@ -162,6 +162,8 @@ validateDir(char *arg, char*value, arguments_error *error) {
         s = calloc(DIR_MAX_LENGTH, sizeof(char));
         strcpy(s, value);
         d_printf("Setting directory: %s\n", s);
+    } else {
+        printf("%s\n", DIR_INVALID_ARGUMENT);
     }
     return s;
 }
