@@ -3,7 +3,7 @@
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size);
 BYTE* convertImageToArrayWithLoss(BYTE* image, int image_size);
 void permutePixels(int n, BYTE* image);
-BYTE** createLosslessShadows(unsigned char* image, int image_size, int n, int k);
+BYTE** createShadows(unsigned char* image, int image_size, int n, int k);
 void evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, int k);
 BYTE ** initializeShadows(int image_size, int n, int k);
 void hideInformation(BMPImage shadowImage, BYTE *toHide, int to_hide_size, main_error *err);
@@ -39,7 +39,7 @@ of the secret image.
 	}
     printf("We have loaded the %d shadows\n", n);
 	// we are cool, so we continue
-	BYTE **shadows = createLosslessShadows(E, image_size, n, k);
+	BYTE **shadows = createShadows(E, image_size, n, k);
 
 	for (int i = 0; i < n; i++) {
 		hideInformation(shadowImages[i], shadows[i], image_size/k, err);
@@ -79,7 +79,7 @@ convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size)
 }
 
 BYTE**
-createLosslessShadows(BYTE* image, int image_size, int n, int k) {
+createShadows(BYTE* image, int image_size, int n, int k) {
 	int shadow_pixel_index = 0;
 	// step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
 	BYTE* section = calloc(k, sizeof(BYTE));
@@ -105,7 +105,7 @@ evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, in
 	for (i = 1; i <= n; i++) {
 		ans = 0;
 		for (j = 0; j < k; j++) {
-			ans += intPow(i, j);
+			ans += section[j] * intPow(i, j);
 		}
 		shadows[i-1][shadow_pixel_index] = ans % MAX_BYTE_VALUE;
 	}
