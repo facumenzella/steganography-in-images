@@ -159,7 +159,6 @@ char*
 defaultDir() {
 	char *s = calloc(strlen(DIRECTORY_DEFAULT_VALUE), sizeof(char));
 	strcpy(s, DIRECTORY_DEFAULT_VALUE);
-	d_printf("Setting default directory: %s\n", s);
     return s;
 }
 
@@ -169,7 +168,6 @@ validateDir(char *arg, char*value, arguments_error *error) {
     if(strcmp(arg, S_DIR_ARG) == 0 || strcmp(arg, DIR_ARG) == 0) {
         s = calloc(DIR_MAX_LENGTH, sizeof(char));
         strcpy(s, value);
-        d_printf("Setting directory: %s\n", s);
     } else {
         printf("%s\n", DIR_INVALID_ARGUMENT);
     }
