@@ -1,11 +1,13 @@
 #ifndef __DISTRIBUTION_H__
 #define __DISTRIBUTION_H__
 
-#include "./cmd.h"
-#include "./constants.h"
-#include "./image.h"
-#include "./imageUtils.h"
-#include "./random.h"
+#include "cmd.h"
+#include "math.h"
+#include "parameters.h"
+#include "constants.h"
+#include "image.h"
+#include "imageUtils.h"
+#include "random.h"
 
 void distribute(Arguments arguments, main_error *err);
 
