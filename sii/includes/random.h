@@ -4,5 +4,6 @@
 #import <stdlib.h>
 
 long int getRandom(long int max);
+void randomize(int num);
 
 #endif

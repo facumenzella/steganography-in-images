@@ -31,5 +31,6 @@ int** copySquareMatrix(int** matrix, int dimension);
 BYTE** makeModularMatrix(int** matrix, int dimension);
 void setValuesToIntMatrix(int** matrix, int rows, int columns, int value);
 void setValuesToByteMatrix(BYTE** matrix, int rows, int columns, BYTE value);
+void permutePixels(int n, BYTE* image);
 
 #endif

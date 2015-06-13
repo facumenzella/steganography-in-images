@@ -1,6 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../includes/math.h"
+#include "../includes/random.h"
+
+void
+permutePixels(int image_size, BYTE* image) {
+	int i;
+	for (i = image_size - 1; i > 0; i--) {
+		long int random = getRandom(i);
+		BYTE pivot = image[random];
+		image[random] = image[i];
+		image[i] = pivot;
+	}
+}
 
 int
 bytePow(int base, int exponent) {

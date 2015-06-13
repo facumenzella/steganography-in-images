@@ -3,17 +3,18 @@
 #include "../includes/reveal.h"
 
 void initializeEquations(int** equations, int* n_values, int n_size, int k);
-int** gaussJordanElliminationMethod(int** equations, int dimension);
+int** gaussJordanEliminationMethod(int** equations, int dimension);
 BYTE* reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k);
-void elliminateValuesAtColumn(int** equation, int** inverse, int dimension, int pivot);
-void elliminateValues(int** equation, int** inverse, int dimension, int pivot, int direction);
-BYTE* revealPartialImage(BYTE* partial_image, int partial_image_size);
+void eliminateValuesAtColumn(int** equation, int** inverse, int dimension, int pivot);
+void eliminateValues(int** equation, int** inverse, int dimension, int pivot, int direction);
+BYTE* revealPartialImage(BYTE* partial_image, int partial_image_size, int* permuted_image_size);
 
 BYTE*
 revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_size, int seed) {
 	int i, j, l, partial_image_index;
 	BYTE** shadows_i_pixels = declareGenericByteMatrix(n_size, 0);
 	BYTE* partial_image = calloc(k*shadow_size, sizeof(BYTE));
+	long partial_image_size;
 	BYTE** inverseMatrix;
 	BYTE** coefficients;
 	int** equations = declareEquations(k);
@@ -23,7 +24,7 @@ revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_
 			shadows_i_pixels[i][0] = shadows_pixels[i][j];
 		}
 		initializeEquations(equations, n_values, n_size, k);
-		inverseMatrix = makeModularMatrix(gaussJordanElliminationMethod(equations, n_size), n_size);
+		inverseMatrix = makeModularMatrix(gaussJordanEliminationMethod(equations, n_size), n_size);
 		coefficients = multiplyByteMatrices(inverseMatrix, shadows_i_pixels, n_size, n_size, n_size, 1); // Se supone que a esta altura, n = k par que quede la matriz cuadrada.
 		for (l = 0; l < k; l++) {
 			partial_image[partial_image_index + l] = coefficients[l][0];
@@ -31,14 +32,17 @@ revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_
 		partial_image_index = l + 1;
 		setValuesToByteMatrix(shadows_i_pixels, n_size, 0, 0);
 	}
+	randomize(seed);
  	//Repetir hasta consumir todos los bytes de las sombras
  		//Agarrar el siguiente byte de cada una de las shadows
  		//hacer la interpolacion de lagrange para sacar los coeficientes, voy construyendo  partial_image
  	//pasar partial_image por revealPartialImage
  	//revertir la permutación
  	// Acá falta la "despermutación" de todo!!
- 	BYTE* permuted_image = revealPartialImage(partial_image, k);
- 	return permuted_image;
+ 	int permuted_image_size;
+ 	BYTE* image = revealPartialImage(partial_image, partial_image_index, &permuted_image_size);
+ 	permutePixels(permuted_image_size, image);
+ 	return image;
  }
 
 void
@@ -52,29 +56,29 @@ initializeEquations(int** equations, int* n_values, int n_size, int k) {
 }
 
 int**
-gaussJordanElliminationMethod(int** equations, int dimension) { //AKA: Matrix inversion
+gaussJordanEliminationMethod(int** equations, int dimension) { //AKA: Matrix inversion
 	int** inverseMatrix = declareEquations(dimension);
 	int** copied_equations = copySquareMatrix(equations, dimension);
 	identityMatrix(inverseMatrix, dimension);
 	int i;
 	for (i = 0; i < dimension; i++) {
-		elliminateValuesAtColumn(copied_equations, inverseMatrix, dimension, i);
+		eliminateValuesAtColumn(copied_equations, inverseMatrix, dimension, i);
 	}
 	return inverseMatrix;
 }
 
 void
-elliminateValuesAtColumn(int** equations, int** inverse, int dimension, int pivot) {
+eliminateValuesAtColumn(int** equations, int** inverse, int dimension, int pivot) {
 	if (equations[pivot][pivot] != 1){
 		inverse[pivot] = divideRowBy(inverse[pivot], dimension, equations[pivot][pivot]);
 		equations[pivot] = divideRowBy(equations[pivot], dimension, equations[pivot][pivot]);
 	}
-	elliminateValues(equations, inverse, dimension, pivot, UP);
-	elliminateValues(equations, inverse, dimension, pivot, DOWN);
+	eliminateValues(equations, inverse, dimension, pivot, UP);
+	eliminateValues(equations, inverse, dimension, pivot, DOWN);
 }
 
 void
-elliminateValues(int** equations, int** inverse, int dimension, int pivot, int direction) {
+eliminateValues(int** equations, int** inverse, int dimension, int pivot, int direction) {
 	int i = pivot + direction;
 	while(i >= 0 && i < dimension) {
 		if (equations[i][pivot] != 0) {
@@ -86,7 +90,7 @@ elliminateValues(int** equations, int** inverse, int dimension, int pivot, int d
 }
 
 BYTE*
-revealPartialImage(BYTE* partial_image, int partial_image_size) {
+revealPartialImage(BYTE* partial_image, int partial_image_size, int* permuted_image_size) {
 	BYTE* result = calloc(partial_image_size*2, sizeof(BYTE));
 	int i, result_index = 0;
 	for (i = 0; i < partial_image_size; i++, result_index++) {
@@ -98,6 +102,7 @@ revealPartialImage(BYTE* partial_image, int partial_image_size) {
 			result[result_index] = b;
 		}
 	}
+	*permuted_image_size = result_index;
 	return realloc(result, result_index);
 }
 
@@ -128,7 +133,7 @@ main(void) {
 	results[1][0] = 123;
 	results[2][0] = 147;
 	printSquareMatrix(matrix, 3);
-	int** ans = gaussJordanElliminationMethod(matrix, 3);
+	int** ans = gaussJordanEliminationMethod(matrix, 3);
 	printf("A:\n");
 	printSquareMatrix(matrix, 3);
 	printf("Results:\n");
