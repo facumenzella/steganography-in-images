@@ -12,6 +12,7 @@ void
 distribute(Arguments arguments, main_error *err) {
 	char *file_name = getSecret(arguments);
 	BMPImage bmp = loadImage(file_name, err);
+    printf("Secret image %s was succesfully loaded\n", file_name);
 	BYTE *image = getBMPImage(bmp);
 	char *directory = getDirectory(arguments);
 	int image_size = getImageSize(bmp);
@@ -36,14 +37,14 @@ of the secret image.
 		d_printf("%s\n", *err);
 		return; // we fucked up.
 	}
-    d_printf("We have loaded the shadows\n");
+    printf("We have loaded the %d shadows\n", n);
 	// we are cool, so we continue
 	BYTE **shadows = createLosslessShadows(E, image_size, n, k);
 
 	for (int i = 0; i < n; i++) {
 		hideInformation(shadowImages[i], shadows[i], image_size/k, err);
 	}
-	d_printf("We are done here\n");
+	printf("We are done here\n");
 }
 
 BYTE*
