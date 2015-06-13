@@ -12,7 +12,7 @@ void
 distribute(Arguments arguments, main_error *err) {
 	char *file_name = getSecret(arguments);
 	BMPImage bmp = loadImage(file_name, err);
-    printf("Secret image %s was succesfully loaded\n", file_name);
+  printf("Secret image %s was succesfully loaded\n", file_name);
 	BYTE *image = getBMPImage(bmp);
 	char *directory = getDirectory(arguments);
 	int image_size = getImageSize(bmp);
@@ -30,7 +30,7 @@ of the secret image.
 		2.2. If pi>250; then split pi into two values 250 and (pi - 250).
 		Store these two values in E (first 250, then pi - 250).
 	*/
-	BYTE *E = convertImageToArrayWithoutLoss(image, image_size);
+	BYTE *E = convertImageToArrayWithLoss(image, image_size);
 
 	BMPImage *shadowImages = loadImages(directory, n, err);
 	if (shadowImages == NULL) {
@@ -74,7 +74,7 @@ convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size)
 		}
 	}
 	*new_image_size = j;
-	realloc(converted_image, new_image_size);
+	realloc(new_image_size, *converted_image);
 	return converted_image;
 }
 
@@ -141,5 +141,4 @@ hideInformation(BMPImage shadowImage, BYTE *toHide, int size_to_hide, main_error
 			shadowImage_bytes[bi++] = overrideLSB(shadowImage_byte, bit);
 		}
 	}
-
 }
