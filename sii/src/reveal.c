@@ -2,13 +2,6 @@
 #include <stdio.h>
 #include "../includes/reveal.h"
 
-void initializeEquations(int** equations, int* n_values, int n_size, int k);
-int** gaussJordanEliminationMethod(int** equations, int dimension);
-BYTE* reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k);
-void eliminateValuesAtColumn(int** equation, int** inverse, int dimension, int pivot);
-void eliminateValues(int** equation, int** inverse, int dimension, int pivot, int direction);
-BYTE* revealPartialImage(BYTE* partial_image, int partial_image_size, int* permuted_image_size);
-
 BYTE*
 revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_size, int seed) {
 	int i, j, l, partial_image_index;
@@ -50,7 +43,7 @@ initializeEquations(int** equations, int* n_values, int n_size, int k) {
 	int i, j;
 	for (i = 0; i < k; i++) {
 		for (j = 0; j < k; j++) {
-			equations[i][j] = intPow(n_values[i], k - j - 1);
+			equations[i][j] = intPow(n_values[i], j);
 		}
 	}
 }
@@ -106,43 +99,43 @@ revealPartialImage(BYTE* partial_image, int partial_image_size, int* permuted_im
 	return realloc(result, result_index);
 }
 
-int
-main(void) {
-	// http://www.wolframalpha.com/widgets/view.jsp?id=2de311966212471dec23077dd840840d
-	// http://www.gregthatcher.com/Mathematics/GaussJordan.aspx
-	int** matrix = calloc(3, sizeof(int*));
-	int i;
-	for (i = 0; i < 3; i++) {
-		matrix[i] = calloc(3, sizeof(int));
-	}
-	BYTE** results = calloc(3, sizeof(BYTE*));
-	for (i = 0; i < 3; i++) {
-		results[i] = calloc(1, sizeof(BYTE));
-	}
-	matrix[0] = calloc(3, sizeof(int));
-	matrix[0][0] = 1;
-	matrix[0][1] = 1;
-	matrix[0][2] = 1;
-	matrix[1][0] = 4;
-	matrix[1][1] = 2;
-	matrix[1][2] = 1;
-	matrix[2][0] = 9;
-	matrix[2][1] = 3;
-	matrix[2][2] = 1;
-	results[0][0] = 83;
-	results[1][0] = 123;
-	results[2][0] = 147;
-	printSquareMatrix(matrix, 3);
-	int** ans = gaussJordanEliminationMethod(matrix, 3);
-	printf("A:\n");
-	printSquareMatrix(matrix, 3);
-	printf("Results:\n");
-	printByteMatrix(results, 3, 1);
-	printf("\nA^-1:\n");
-	BYTE** modular_ans = makeModularMatrix(ans, 3);
-	printByteSquareMatrix(modular_ans, 3);
-	printf("\nA*A^-1:\n");
-	printByteSquareMatrix(multiplyByteSquareMatrices(makeModularMatrix(ans, 3), makeModularMatrix(matrix, 3), 3), 3);
-	printf("COEFFICIENTS (A^-1*Results):\n");
-	printByteMatrix(multiplyByteMatrices(modular_ans, results, 3, 3, 3, 1), 3, 1);
-}
+// int
+// main(void) {
+// 	// http://www.wolframalpha.com/widgets/view.jsp?id=2de311966212471dec23077dd840840d
+// 	// http://www.gregthatcher.com/Mathematics/GaussJordan.aspx
+// 	int** matrix = calloc(3, sizeof(int*));
+// 	int i;
+// 	for (i = 0; i < 3; i++) {
+// 		matrix[i] = calloc(3, sizeof(int));
+// 	}
+// 	BYTE** results = calloc(3, sizeof(BYTE*));
+// 	for (i = 0; i < 3; i++) {
+// 		results[i] = calloc(1, sizeof(BYTE));
+// 	}
+// 	matrix[0] = calloc(3, sizeof(int));
+// 	matrix[0][0] = 1;
+// 	matrix[0][1] = 1;
+// 	matrix[0][2] = 1;
+// 	matrix[1][0] = 4;
+// 	matrix[1][1] = 2;
+// 	matrix[1][2] = 1;
+// 	matrix[2][0] = 9;
+// 	matrix[2][1] = 3;
+// 	matrix[2][2] = 1;
+// 	results[0][0] = 83;
+// 	results[1][0] = 123;
+// 	results[2][0] = 147;
+// 	printSquareMatrix(matrix, 3);
+// 	int** ans = gaussJordanEliminationMethod(matrix, 3);
+// 	printf("A:\n");
+// 	printSquareMatrix(matrix, 3);
+// 	printf("Results:\n");
+// 	printByteMatrix(results, 3, 1);
+// 	printf("\nA^-1:\n");
+// 	BYTE** modular_ans = makeModularMatrix(ans, 3);
+// 	printByteSquareMatrix(modular_ans, 3);
+// 	printf("\nA*A^-1:\n");
+// 	printByteSquareMatrix(multiplyByteSquareMatrices(makeModularMatrix(ans, 3), makeModularMatrix(matrix, 3), 3), 3);
+// 	printf("COEFFICIENTS (A^-1*Results):\n");
+// 	printByteMatrix(multiplyByteMatrices(modular_ans, results, 3, 3, 3, 1), 3, 1);
+// }

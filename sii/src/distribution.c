@@ -1,13 +1,5 @@
 #include "../includes/distribution.h"
 
-BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size);
-BYTE* convertImageToArrayWithLoss(BYTE* image, int image_size);
-void permutePixels(int n, BYTE* image);
-BYTE** createShadows(unsigned char* image, int image_size, int n, int k);
-void evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, int k);
-BYTE ** initializeShadows(int image_size, int n, int k);
-void hideInformation(BMPImage shadowImage, BYTE *toHide, int to_hide_size, main_error *err);
-
 void
 distribute(Arguments arguments, main_error *err) {
 	char *file_name = getSecret(arguments);
@@ -87,14 +79,14 @@ createShadows(BYTE* image, int image_size, int n, int k) {
 	int i;
 
 	// step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
-	for (i = 0; i < image_size; i++) {
+	for (i = 1; i <= image_size; i++) {
+		section[(i % k) - 1] = image[i-1];
 		if (i % k == 0) {
 			// step 4 - Generate n pixels for the n shadow images
 			evaluateSection(section, shadows, shadow_pixel_index, n, k);
 			shadow_pixel_index++;
 			memset(section, 0, k);
 		}
-		section[i % k] = image[i];
 	}
 	return shadows;
 }
