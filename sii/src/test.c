@@ -10,7 +10,7 @@ void printBytes(BYTE* bytes, int size);
 int
 main(int argc, char const *argv[])
 {
-	int imageSize = 100;
+	int imageSize = 1000;
 	int n = 5;
 	int k = 4;
 
@@ -18,7 +18,7 @@ main(int argc, char const *argv[])
 
 	int i;
 	for (i = 1; i <= imageSize; i++) {
-		image[i-1] = i;
+		image[i-1] = i % 251;
 	}
 
 	// randomize(1);
