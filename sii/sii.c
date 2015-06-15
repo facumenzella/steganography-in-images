@@ -1,4 +1,5 @@
 #include "./includes/sii.h"
+#include "./includes/imageUtils.h"
 
 static const char DISTRIBUTE_WELCOME_MSG[] = "You have chosen Distribution mode...";
 static const char RECOVER_WELCOME_MSG[] = "You have chosen Recover mode...";
