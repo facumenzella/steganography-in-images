@@ -6,7 +6,6 @@
 #include "./cmd.h"
 #include "./constants.h"
 #include "./image.h"
-#include "./imageUtils.h"
 #include "./random.h"
 #include "./math.h"
 
