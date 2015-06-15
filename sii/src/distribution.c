@@ -145,7 +145,7 @@ hideInformation(BMPImage shadowImage, BYTE *toHide, int size_to_hide, main_error
 	for (int i = 0; i < size_to_hide; i++) {
 		// we iterate over the bytes to hide
 		BYTE byte_toHide = toHide[i];
-		for (int j = 0; j < 8; j++) {
+		for (int j = 7; j >= 0; j--) {
 			// we iterate over the bits of the byte to hide
 			int bit = getBit(byte_toHide, j);
 			BYTE shadowImage_byte = shadowImage_bytes[bi];
