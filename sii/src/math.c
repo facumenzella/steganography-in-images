@@ -86,15 +86,20 @@ identityMatrix(int** matrix, int dimension) {
 }
 
 void
-printSquareMatrix(int** matrix, int dimension) {
+printMatrix(int** matrix, int rows, int columns) {
 	int i, j;
 	printf("\n");
-	for (i = 0; i < dimension; i++) {
-		for (j = 0; j < dimension; j++) {
+	for (i = 0; i < rows; i++) {
+		for (j = 0; j < columns; j++) {
 			printf("%d\t", matrix[i][j]);
 		}
 		printf("\n");
 	}
+}
+
+void
+printSquareMatrix(int** matrix, int dimension) {
+	printMatrix(matrix, dimension, dimension);
 }
 
 void
@@ -232,11 +237,11 @@ copySquareMatrix(int** matrix, int dimension) {
 
 BYTE**
 makeModularMatrix(int** matrix, int dimension) {
-	int i, j;
+	int i, j, value;
 	BYTE** ans = declareByteEquations(dimension);
 	for (i = 0; i < dimension; i++) {
 		for (j = 0; j < dimension; j++) {
-			int value = matrix[i][j];
+			value = matrix[i][j];
 			if (value < 0) {
 				while (value < 0) {
 					value += MAX_BYTE_VALUE;
@@ -248,4 +253,22 @@ makeModularMatrix(int** matrix, int dimension) {
 		}
 	}
 	return ans;
+}
+
+void
+makeModularIntMatrix(int** matrix, int dimension) {
+	int i, j, value;
+	for (i = 0; i < dimension; i++) {
+		for (j = 0; j < dimension; j++) {
+			value = matrix[i][j];
+			if (value < 0) {
+				while (value < 0) {
+					value += MAX_BYTE_VALUE;
+				}
+				matrix[i][j] = value;
+			} else {
+				matrix[i][j] = matrix[i][j] % MAX_BYTE_VALUE;
+			}
+		}
+	}
 }

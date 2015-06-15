@@ -11,6 +11,7 @@ int** gaussJordanEliminationMethod(int** equations, int dimension);
 BYTE* reconstructImage(BYTE* partial_image, int partial_image_size, int n, int k);
 void eliminateValuesAtColumn(int** equation, int** inverse, int dimension, int pivot);
 void eliminateValues(int** equation, int** inverse, int dimension, int pivot, int direction);
-BYTE* revealPartialImage(BYTE* partial_image, int partial_image_size, int* permuted_image_size);
+BYTE* revealPartialImageWithoutLoss(BYTE* partial_image, int partial_image_size, int* permuted_image_size);
+BYTE* revealPartialImageWithLoss(BYTE* partial_image, int partial_image_size);
 
 #endif

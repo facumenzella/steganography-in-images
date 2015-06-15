@@ -24,6 +24,7 @@ distribute(Arguments arguments, main_error *err) {
 /* step 1 - Use a key to generate a permutation sequence to permute the pixels
 of the secret image.
 */
+	// randomize(seed);
 	permutePixels(n, image);
 
 	/* step 2 - Sequentially read in gray values of D* and then store in E according to the rule below.
@@ -97,9 +98,9 @@ createShadows(BYTE* image, int image_size, int n, int k) {
 	int i;
 
 	// step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
-	for (i = 1; i <= image_size; i++) {
-		section[(i % k) - 1] = image[i-1];
-		if (i % k == 0) {
+	for (i = 0; i < image_size; i++) {
+		section[i % k] = image[i];
+		if ((i + 1) % k == 0) {
 			// step 4 - Generate n pixels for the n shadow images
 			evaluateSection(section, shadows, shadow_pixel_index, n, k);
 			shadow_pixel_index++;
