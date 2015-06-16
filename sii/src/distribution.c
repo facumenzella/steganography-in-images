@@ -1,6 +1,7 @@
 #include "../includes/distribution.h"
 #include "../includes/imageUtils.h"
 
+boolean isValidKAgainstImageSize(const int k, const int image_size);
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size);
 BYTE* convertImageToArrayWithLoss(BYTE* image, int image_size);
 void permutePixels(int n, BYTE* image);
@@ -21,6 +22,10 @@ distribute(Arguments arguments, main_error *err) {
 	int n = getTotalAmountOfShadowsToDistributeSecret(arguments);
 	int k = getMinShadowsToRecoverSecret(arguments);
 
+    if (isValidKAgainstImageSize(k, image_size) == FALSE) {
+        return;
+    }
+    
 /* step 1 - Use a key to generate a permutation sequence to permute the pixels
 of the secret image.
 */
@@ -56,6 +61,15 @@ of the secret image.
             printf("error: %s\n", *err);
         }
     }
+}
+
+boolean
+isValidKAgainstImageSize(const int k, const int image_size) {
+    printf("Size: %d with k: %d\n", image_size, k);
+    if (image_size % k == 0) {
+        return TRUE;
+    }
+    return FALSE;
 }
 
 BYTE*
@@ -94,9 +108,10 @@ createShadows(BYTE* image, int image_size, int n, int k) {
 	int shadow_pixel_index = 0;
 	// step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
 	BYTE* section = calloc(k, sizeof(BYTE));
+    printf("Creating shadows from size: %d\n with k: %d\n", image_size, k);
 	BYTE** shadows = initializeShadows(image_size, n, k);
 	int i;
-
+    printf("Shadows initialized\n");
 	// step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
 	for (i = 0; i < image_size; i++) {
 		section[i % k] = image[i];
@@ -107,6 +122,7 @@ createShadows(BYTE* image, int image_size, int n, int k) {
 			memset(section, 0, k);
 		}
 	}
+    printf("Shadows created\n");
 	return shadows;
 }
 
