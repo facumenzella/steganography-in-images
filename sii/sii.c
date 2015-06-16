@@ -14,11 +14,11 @@ main(int argc, char * argv[]) {
 
   handleErrorIfNeeded(error);
 
-  main_error err;
+  main_error err = NULL;
   switch (getMode(arguments)) {
     case DISTRIBUTE:
     printf("%s\n", DISTRIBUTE_WELCOME_MSG);
-    distribute(arguments, &err);
+    runDistribution(arguments, &err);
     break;
     case RECOVER:
     printf("%s\n", RECOVER_WELCOME_MSG);

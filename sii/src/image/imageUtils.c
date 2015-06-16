@@ -75,7 +75,6 @@ saveImage(BMPImage image, char *path, io_error *err) {
         setError(err, COULD_NOT_OPEN_FILE_ERROR);
         return;
     }
-    
     fwrite(getHeader(image), sizeof(BYTE), offset, file);
     fwrite(getBMPImage(image), sizeof(BYTE), getImageSize(image), file);
     
