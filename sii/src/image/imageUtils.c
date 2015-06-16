@@ -20,14 +20,14 @@ boolean isBMP(char * path);
 
 BMPImage
 loadImage(char *path, io_error *err) {
-    d_printf("Trying to open:%s\n", path);
+    printf("Trying to open:%s\n", path);
     int fileSize = 0, imageOffset = 0, imageSize = -1;
     BYTE *header = NULL, *image = NULL;
     char * imageName;
     FILE *file = NULL;
     file = fopen(path, READ_BINARY_MODE);
     if (file == NULL) {
-        d_printf("could not open: %s\n", path);
+        printf("could not open: %s\n", path);
         setError(err, COULD_NOT_OPEN_FILE_ERROR);
         freeWhatNeedsToBeFree(header, image, file);
         return NULL;
@@ -68,7 +68,7 @@ saveImage(BMPImage image, char *path, io_error *err) {
     strcat(fullPath, path);
     strcat(fullPath, getFilename(image));
     
-    d_printf("Trying to save %s\n", fullPath);
+    printf("Trying to save %s\n", fullPath);
     
     file = fopen(fullPath, WRITE_BINARY_MODE);
     if(file == NULL) {
@@ -84,7 +84,7 @@ saveImage(BMPImage image, char *path, io_error *err) {
 
 BMPImage*
 loadImages(char *dir, int n, io_error *err) {
-    d_printf("Fetching images from %s\n", dir);
+    printf("Fetching images from %s\n", dir);
     DIR *pwd = NULL;
     NEXT_DIR curr = NULL;
     int imagesRead = 0;
@@ -114,7 +114,7 @@ loadImages(char *dir, int n, io_error *err) {
             // its a file not a directory
             if (isBMP(fullPath)) {
                 BMPImage shadowImage = loadImage(fullPath, err);
-                d_printf("\topening %s \n", getFilename(shadowImage));
+                printf("\topening %s \n", getFilename(shadowImage));
                 if (*err != NULL) {
                     closedir(pwd);
                     free(fullPath);
@@ -139,7 +139,7 @@ loadImages(char *dir, int n, io_error *err) {
 
 int
 countImagesInDirectory(char *dir, io_error *err) {
-    d_printf("Fetching images from %s\n", dir);
+    printf("Fetching images from %s\n", dir);
     DIR *pwd = NULL;
     NEXT_DIR curr = NULL;
     int shadows = 0;
@@ -187,7 +187,7 @@ void
 readFileSize(FILE *file, int *fileSize) {
     fseek(file, FILE_SIZE_OFFSET, SEEK_SET);
     fread(fileSize, sizeof(int), 1, file);
-    d_printf("\t file size: %d - read offset %#010x from the beginning of file\n", *fileSize, FILE_SIZE_OFFSET);
+    printf("\t file size: %d - read offset %#010x from the beginning of file\n", *fileSize, FILE_SIZE_OFFSET);
     rewind(file);
 }
 
@@ -195,7 +195,7 @@ void
 readImageOffset(FILE *file, int *imageOffset) {
     fseek(file, IMAGE_OFFSET_OFFSET, SEEK_SET);
     fread(imageOffset, sizeof(int), 1, file);
-    d_printf("\t imageoffset: %d - read offset %#010x from the beginning of file\n", *imageOffset, IMAGE_OFFSET_OFFSET);
+    printf("\t imageoffset: %d - read offset %#010x from the beginning of file\n", *imageOffset, IMAGE_OFFSET_OFFSET);
     rewind(file);
 }
 
@@ -204,13 +204,13 @@ readImageSize(FILE *file, int *imageSize) {
     int hor, ver;
     fseek(file, IMAGE_HORIZONTAL_RESOLUTION, SEEK_SET);
     fread(&hor, sizeof(int), 1, file);
-    d_printf("\t horizontal res: %d - read offset %#010x from the beginning of file\n", hor, IMAGE_HORIZONTAL_RESOLUTION);
+    printf("\t horizontal res: %d - read offset %#010x from the beginning of file\n", hor, IMAGE_HORIZONTAL_RESOLUTION);
     rewind(file);
     fseek(file, IMAGE_VERTICAL_RESOLUTION, SEEK_SET);
     fread(&ver, sizeof(int), 1, file);
-    d_printf("\t vertical res: %d - read offset %#010x from the beginning of file\n", ver, IMAGE_VERTICAL_RESOLUTION);
+    printf("\t vertical res: %d - read offset %#010x from the beginning of file\n", ver, IMAGE_VERTICAL_RESOLUTION);
     rewind(file);
-    d_printf("\t Image size = %d", hor * ver);
+    printf("\t Image size = %d", hor * ver);
     *imageSize = hor * ver;
 }
 

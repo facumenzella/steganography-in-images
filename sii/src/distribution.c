@@ -37,7 +37,7 @@ of the secret image.
 
 	BMPImage *shadowImages = loadImages(directory, n, err);
 	if (shadowImages == NULL) {
-		d_printf("%s\n", *err);
+		printf("%s\n", *err);
 		return; // we fucked up.
 	}
     printf("We have loaded the %d shadows\n", n);

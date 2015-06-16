@@ -7,6 +7,5 @@
 #include <stdarg.h>
 
 #define DEBUGGING TRUE
-#define d_printf(args ...) if (DEBUGGING) fprintf(stderr, args)
 
 #endif
