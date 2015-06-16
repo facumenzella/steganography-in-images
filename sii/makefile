@@ -30,3 +30,7 @@ sii:
 	@gcc $(BYTE) $(MATH) $(RANDOM) $(FREE) $(ERRORS) $(IMAGES) $(ARGUMENTS) $(DISTRIBUTION) $(SII) -o sii 
 	@echo "Remember the arguments"
 	@echo "TODO add arguments"
+
+# gcc for debugging mode with lldb or gdb
+gcc:
+	@gcc -g $(BYTE) $(MATH) $(RANDOM) $(FREE) $(ERRORS) $(IMAGES) $(ARGUMENTS) $(DISTRIBUTION) $(SII) -o sii 
