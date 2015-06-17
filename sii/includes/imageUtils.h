@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-#include "./image.h"
+#include "./bmp_image.h"
 #include "./errors.h"
 #include "./env.h"
 #include "./constants.h"

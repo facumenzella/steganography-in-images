@@ -1,5 +1,5 @@
-#ifndef __IMAGE_H__
-#define __IMAGE_H__
+#ifndef __BMPIMAGE_H__
+#define __BMPIMAGE_H__
 
 // stdlib includes
 #include <stdio.h>

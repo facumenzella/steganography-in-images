@@ -1,4 +1,4 @@
-#include "../../includes/image.h"
+#include "../../includes/bmp_image.h"
 
 typedef struct image_t {
 	char *filename;

@@ -5,7 +5,7 @@
 
 #include "./cmd.h"
 #include "./constants.h"
-#include "./image.h"
+#include "./bmp_image.h"
 #include "./random.h"
 #include "./math.h"
 
