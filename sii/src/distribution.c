@@ -12,11 +12,13 @@ void hideInformation(BMPImage shadowImage, BYTE *toHide, int to_hide_size, main_
 
 void
 runDistribution(Arguments arguments, main_error *err) {
+    int seed = 10; // TODO check this out
     char *file_name = getSecret(arguments);
     BMPImage bmp = loadImage(file_name, err);
     if (bmp == NULL) {
         // we fucked up
         setError(err, "We could not open the secret image\n");
+        return;
     }
     printf("Secret image %s was succesfully loaded\n", file_name);
 
@@ -30,7 +32,7 @@ runDistribution(Arguments arguments, main_error *err) {
         setError(err, IMAGE_SIZE_NOT_DIVISIBLE_BY_K_ERROR);
         return;
     }
-    distribute(file_name, image, image_size, directory, n, k, err);
+    distribute(file_name, image, image_size, directory, n, k, seed, err);
 }
 
 boolean
@@ -42,11 +44,11 @@ isValidKAgainstImageSize(const int k, const int image_size) {
 }
 
 void
-distribute(char *file_name, BYTE *image, int image_size, char* directory, int n, int k, main_error *err) {
+distribute(char *file_name, BYTE *image, int image_size, char* directory, int n, int k, int seed, main_error *err) {
     /* step 1 - Use a key to generate a permutation sequence to permute the pixels
      of the secret image.
      */
-    // randomize(seed);
+    randomize(seed);
     permutePixels(n, image);
     
     /* step 2 - Sequentially read in gray values of D* and then store in E according to the rule below.
@@ -70,10 +72,12 @@ distribute(char *file_name, BYTE *image, int image_size, char* directory, int n,
         hideInformation(shadowImages[i], shadows[i], image_size/k, err);
     }
     printf("We are done here\nWe now save the images with the hidden data\n");
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < 1; i++) {
         io_error error = NULL;
         BMPImage image = shadowImages[i];
-        saveImage(image, directory, &error);
+        setIndex(image, i);
+        setSeed(image, seed);
+        saveImage(image, "./", &error);
         if (error != NULL) {
             printf("error: %s\n", error);
             return;

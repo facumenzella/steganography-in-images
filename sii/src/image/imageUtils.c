@@ -7,6 +7,8 @@ static const int IMAGE_OFFSET_OFFSET = 10; // Pretty cool name, a I right?
 static const int IMAGE_SIZE_OFFSET = 34; // Not working, so we will use the following two
 static const int IMAGE_HORIZONTAL_RESOLUTION = 18;
 static const int IMAGE_VERTICAL_RESOLUTION = 22;
+static const int SEED_INDEX = 6;
+static const int PORTER_INDEX = 8;
 
 char* getNameFromPath(char const *path);
 void readFileSize(FILE *file, int *fileSize);
@@ -55,7 +57,7 @@ loadImage(char *path, io_error *err) {
         return NULL;
     }
     readImage(file, imageOffset, imageSize, image, err);
-    return initBMPImage(imageName   , fileSize, imageOffset, imageSize, header, image, err);
+    return initBMPImage(imageName, fileSize, imageOffset, imageSize, header, image, err);
 }
 
 void
@@ -77,6 +79,16 @@ saveImage(BMPImage image, char *path, io_error *err) {
     }
     fwrite(getHeader(image), sizeof(BYTE), offset, file);
     fwrite(getBMPImage(image), sizeof(BYTE), getImageSize(image), file);
+    
+    // we write the seed
+    fseek(file, SEED_INDEX, SEEK_SET);
+    uint16_t seed = getSeed(image);
+    fwrite(&seed, sizeof(uint16_t), 1, file);
+    
+    // we write the porter index
+    fseek(file, PORTER_INDEX, SEEK_SET);
+    uint16_t porter = getIndex(image);
+    fwrite(&porter, sizeof(uint16_t), 1, file);
     
     fclose(file);
 }

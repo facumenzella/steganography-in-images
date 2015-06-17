@@ -112,7 +112,8 @@ setIndex(BMPImage image, int n) {
     image->n = n;
 }
 
-int getSeed(BMPImage image) {
+int
+getSeed(BMPImage image) {
     return image->seed;
 }
 
