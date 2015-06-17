@@ -23,5 +23,9 @@ char *getFilename(BMPImage image);
 void freeImage(BMPImage image);
 void setImageInIndex(BMPImage image, char value, int index);
 BMPImage clone(BMPImage image, io_error *err);
+int getIndex(BMPImage image);
+void setIndex(BMPImage image, int n);
+int getSeed(BMPImage image);
+void setSeed(BMPImage image, int seed);
 
 #endif
