@@ -1,4 +1,4 @@
-#include "../../includes/image.h"
+#include "../../includes/bmp_image.h"
 
 typedef struct image_t {
 	char *filename;
@@ -7,6 +7,8 @@ typedef struct image_t {
 	int imageSize;
 	BYTE *header;
 	BYTE *image;
+    int n;
+    int seed;
 } image_t;
 
 BMPImage
@@ -98,6 +100,26 @@ getFilename(BMPImage image) {
 void
 setBMPImageInIndex(BMPImage image, char value, int index) {
 	image->image[index] = value;
+}
+
+int
+getIndex(BMPImage image) {
+   return image->n;
+}
+
+void
+setIndex(BMPImage image, int n) {
+    image->n = n;
+}
+
+int
+getSeed(BMPImage image) {
+    return image->seed;
+}
+
+void
+setSeed(BMPImage image, int seed) {
+    image->seed = seed;
 }
 
 BMPImage

@@ -5,12 +5,12 @@
 
 #include "./cmd.h"
 #include "./constants.h"
-#include "./image.h"
-#include "./imageUtils.h"
+#include "./bmp_image.h"
 #include "./random.h"
 #include "./math.h"
 
-void distribute(Arguments arguments, main_error *err);
+void runDistribution(Arguments arguments, main_error *err);
+void distribute(char *file_name, BYTE *image, int image_size, char* directory, int n, int k, int seed, main_error *err);
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size);
 BYTE* convertImageToArrayWithLoss(BYTE* image, int image_size);
 void permutePixels(int n, BYTE* image);

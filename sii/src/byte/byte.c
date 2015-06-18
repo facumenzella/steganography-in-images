@@ -3,13 +3,10 @@
 int
 getBit(BYTE byte, int whichBit)
 {
-    if (whichBit > 0 && whichBit <= 8)
-        return (byte & (1 << (whichBit - 1)));
-    else
-        return 0;
+    return (byte >> whichBit) & 0x01;
 }
 
 BYTE
 overrideLessSignificantBit(BYTE byte, int bit) {
-  return (~1 & byte) | bit;
+    return (~1 & byte) | bit;
 }

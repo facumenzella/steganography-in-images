@@ -1,4 +1,5 @@
 #include "./includes/sii.h"
+#include "./includes/imageUtils.h"
 
 static const char DISTRIBUTE_WELCOME_MSG[] = "You have chosen Distribution mode...";
 static const char RECOVER_WELCOME_MSG[] = "You have chosen Recover mode...";
@@ -13,11 +14,11 @@ main(int argc, char * argv[]) {
 
   handleErrorIfNeeded(error);
 
-  main_error err;
+  main_error err = NULL;
   switch (getMode(arguments)) {
     case DISTRIBUTE:
     printf("%s\n", DISTRIBUTE_WELCOME_MSG);
-    distribute(arguments, &err);
+    runDistribution(arguments, &err);
     break;
     case RECOVER:
     printf("%s\n", RECOVER_WELCOME_MSG);
@@ -29,7 +30,7 @@ main(int argc, char * argv[]) {
 void
 handleErrorIfNeeded(arguments_error error) {
   if (error != NULL) {
-    d_printf("%s\n", error);
+    printf("%s\n", error);
     EXIT;
   }
 }
