@@ -14,8 +14,8 @@ distribute(Arguments arguments, main_error *err) {
 /* step 1 - Use a key to generate a permutation sequence to permute the pixels
 of the secret image.
 */
-	// randomize(seed);
-	permutePixels(n, image);
+	// randomize(5);
+	//permutePixels(n, image);
 
 	/* step 2 - Sequentially read in gray values of D* and then store in E according to the rule below.
 	For each read-in gray value pi of D* :

@@ -3,15 +3,73 @@
 #include "../includes/math.h"
 #include "../includes/random.h"
 
+int* createArrayWithSequentialNumbers(int array_size);
+BYTE* copyByteArray(BYTE* array, int size);
+int* generateShuffledArray(int size);
+
 void
-permutePixels(int image_size, BYTE* image) {
+shufflePixels(int image_size, BYTE* image) {
 	int i;
-	for (i = image_size - 1; i > 0; i--) {
-		long int random = getRandom(i);
-		BYTE pivot = image[random];
-		image[random] = image[i];
-		image[i] = pivot;
+	int* image_pixel_indexes = generateShuffledArray(image_size);
+	BYTE* copied_image = copyByteArray(image, image_size);
+	printf("RANDOM:\n");
+	printRow(image_pixel_indexes, image_size);
+	for (i = 0; i < image_size; i++) {
+		image[i] = copied_image[image_pixel_indexes[i]];
 	}
+}
+
+void
+unshufflePixels(int image_size, BYTE* image) {
+	int i;
+	printf("RANDOM:\n");
+	int* image_pixel_indexes = generateShuffledArray(image_size);
+	printRow(image_pixel_indexes, image_size);
+	BYTE* unshuffledimage = calloc(image_size, sizeof(BYTE));
+	BYTE* copied_image = copyByteArray(image, image_size);
+	int j;
+	printf("ARRAY\n");
+	for(j = 0; j < image_size; j++) {
+		printf("%d ", image[j]);
+	}
+	printf("\n");
+	for (i = 0; i < image_size; i++) {
+		image[image_pixel_indexes[i]] = copied_image[i];
+	}
+}
+
+int*
+generateShuffledArray(int size) {
+	int i;
+	int pivot;
+	int* shuffled_array = createArrayWithSequentialNumbers(size);
+	for (i = size - 1; i > 0; i--) {
+		long int random = getRandom(i);
+		pivot = shuffled_array[random];
+		shuffled_array[random] = shuffled_array[i];
+		shuffled_array[i] = pivot;
+	}
+	return shuffled_array;
+}
+
+BYTE*
+copyByteArray(BYTE* array, int size) {
+	int i;
+	BYTE* copy = calloc(size, sizeof(BYTE));
+	for (i = 0; i < size; i++) {
+		copy[i] = array[i];
+	}
+	return copy;
+}
+
+int*
+createArrayWithSequentialNumbers(int array_size) {
+	int* array = calloc(array_size, sizeof(int));
+	int i;
+	for(i = 0; i < array_size; i++) {
+		array[i] = i;
+	}
+	return array;
 }
 
 int

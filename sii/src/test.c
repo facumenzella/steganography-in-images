@@ -10,9 +10,9 @@ void printBytes(BYTE* bytes, int size);
 int
 main(int argc, char const *argv[])
 {
-	int imageSize = 1000;
+	int imageSize = 10;
 	int n = 5;
-	int k = 4;
+	int k = 2;
 
 	BYTE* image = calloc(imageSize, sizeof(BYTE));
 
@@ -21,10 +21,12 @@ main(int argc, char const *argv[])
 		image[i-1] = i % 251;
 	}
 
-	// randomize(1);
+	randomize(1);
 
-	// permutePixels(imageSize, image);
+	printf("PERMUTANDO...\n");
+	shufflePixels(imageSize, image);
 
+	printf("imprimiedo bytes:");
 	printBytes(image, imageSize);
 
 	BYTE* E = convertImageToArrayWithLoss(image, imageSize);
@@ -48,7 +50,9 @@ main(int argc, char const *argv[])
 
 	BYTE* result = revealImage(n_values, k, k, selectedShadows, imageSize/k, 1);
 
-	// permutePixels(imageSize, result);
+	randomize(1);
+	printf("DES-PERMUTANDO...\n");
+	unshufflePixels(imageSize, result);
 
 	printBytes(result, imageSize);
 
