@@ -4,7 +4,6 @@
 boolean isValidKAgainstImageSize(const int k, const int image_size);
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size);
 BYTE* convertImageToArrayWithLoss(BYTE* image, int image_size);
-void permutePixels(int n, BYTE* image);
 BYTE** createShadows(unsigned char* image, int image_size, int n, int k);
 void evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, int k);
 BYTE ** initializeShadows(int image_size, int n, int k);
@@ -32,7 +31,20 @@ runDistribution(Arguments arguments, main_error *err) {
         setError(err, IMAGE_SIZE_NOT_DIVISIBLE_BY_K_ERROR);
         return;
     }
-    distribute(file_name, image, image_size, directory, n, k, seed, err);
+    
+    BMPImage *shadow_images = loadImages(directory, n, err);
+    if (shadow_images == NULL) {
+        return; // we fucked up.
+    }
+    for (int i = 0; i < n; i++) {
+        if (isValidKAgainstImageSize(k, getImageSize(shadow_images[i])) == FALSE) {
+            setError(err, IMAGE_SIZE_NOT_DIVISIBLE_BY_K_ERROR);
+            return;
+        }
+    }
+    printf("We have loaded the %d shadows\n", n);
+    
+    distribute(file_name, image, image_size, shadow_images, directory, n, k, seed, err);
 }
 
 boolean
@@ -44,12 +56,13 @@ isValidKAgainstImageSize(const int k, const int image_size) {
 }
 
 void
-distribute(char *file_name, BYTE *image, int image_size, char* directory, int n, int k, int seed, main_error *err) {
+distribute(char *file_name, BYTE *image, int image_size, BMPImage *shadow_images, char* directory, int n, int k,
+           int seed, main_error *err) {
     /* step 1 - Use a key to generate a permutation sequence to permute the pixels
      of the secret image.
      */
     randomize(seed);
-    permutePixels(n, image);
+    shufflePixels(n, image);
     
     /* step 2 - Sequentially read in gray values of D* and then store in E according to the rule below.
      For each read-in gray value pi of D* :
@@ -59,22 +72,16 @@ distribute(char *file_name, BYTE *image, int image_size, char* directory, int n,
      */
     BYTE *E = convertImageToArrayWithLoss(image, image_size);
     
-    BMPImage *shadowImages = loadImages(directory, n, err);
-    if (shadowImages == NULL) {
-        printf("%s\n", *err);
-        return; // we fucked up.
-    }
-    printf("We have loaded the %d shadows\n", n);
     // we are cool, so we continue
     BYTE **shadows = createShadows(E, image_size, n, k);
     
     for (int i = 0; i < n; i++) {
-        hideInformation(shadowImages[i], shadows[i], image_size/k, err);
+        hideInformation(shadow_images[i], shadows[i], image_size/k, err);
     }
-    printf("We are done here\nWe now save the images with the hidden data\n");
+    printf("We now save the images with the hidden data\n");
     for (int i = 0; i < n; i++) {
         io_error error = NULL;
-        BMPImage image = shadowImages[i];
+        BMPImage image = shadow_images[i];
         setIndex(image, i);
         setSeed(image, seed);
         saveImage(image, PORTERS_DIRECTORY, &error);
@@ -83,6 +90,7 @@ distribute(char *file_name, BYTE *image, int image_size, char* directory, int n,
             return;
         }
     }
+    printf("We are done here\n");
 }
 
 BYTE*

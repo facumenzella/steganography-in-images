@@ -10,7 +10,15 @@
 #include "./math.h"
 
 void runDistribution(Arguments arguments, main_error *err);
-void distribute(char *file_name, BYTE *image, int image_size, char* directory, int n, int k, int seed, main_error *err);
+void distribute(char *file_name,
+                BYTE *image,
+                int image_size,
+                BMPImage *shadow_images,
+                char* directory,
+                int n,
+                int k,
+                int seed,
+                main_error *err);
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size);
 BYTE* convertImageToArrayWithLoss(BYTE* image, int image_size);
 void permutePixels(int n, BYTE* image);
