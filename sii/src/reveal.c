@@ -71,8 +71,8 @@ BYTE*
 revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_size, int seed) {
     int i, j, l, partial_image_index;
     BYTE** shadows_i_pixels = declareGenericByteMatrix(n_size, 1);
-    BYTE* partial_image = calloc(k * shadow_size, sizeof(BYTE));
-    long partial_image_size;
+    long image_size = k * shadow_size;
+    BYTE* partial_image = calloc(image_size, sizeof(BYTE));
     BYTE** inverseMatrix;
     BYTE** coefficients;
     int** equations = declareEquations(k);
@@ -90,14 +90,9 @@ revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_
         partial_image_index += l;
         setValuesToByteMatrix(shadows_i_pixels, n_size, 0, 0);
     }
-    // randomize(5);
-    // int permuted_image_size;
-    // Si está prendido el flag de revelar la imagen sin pérdida, entonces
-    // llamamos a la función de abajo!!!
-    // BYTE* image = revealPartialImageWithoutLoss(partial_image, partial_image_index);
-    //permutePixels(partial_image_index, partial_image);
-    // TENEMOS QUE DEVOLVER EL TAMAÑO DE LA NUEVA IMAGEN??? O ESO SE ENCUENTRA EN LAS SOMBRAS???
-    return partial_image;
+    randomize(seed);
+    BYTE* image = unshufflePixels(image_size, partial_image);
+    return image;
 }
 
 void

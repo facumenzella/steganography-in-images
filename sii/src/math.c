@@ -12,7 +12,6 @@ shufflePixels(int image_size, BYTE* image) {
 	int i;
 	int* image_pixel_indexes = generateShuffledArray(image_size);
 	BYTE* copied_image = copyByteArray(image, image_size);
-	printf("RANDOM:\n");
 	printRow(image_pixel_indexes, image_size);
 	for (i = 0; i < image_size; i++) {
 		image[i] = copied_image[image_pixel_indexes[i]];
@@ -22,20 +21,10 @@ shufflePixels(int image_size, BYTE* image) {
 void
 unshufflePixels(int image_size, BYTE* image) {
 	int i;
-	printf("RANDOM:\n");
 	int* image_pixel_indexes = generateShuffledArray(image_size);
 	printRow(image_pixel_indexes, image_size);
 	BYTE* unshuffledimage = calloc(image_size, sizeof(BYTE));
 	BYTE* copied_image = copyByteArray(image, image_size);
-	int j;
-	printf("ARRAY\n");
-	for(j = 0; j < image_size; j++) {
-		printf("%d ", image[j]);
-	}
-	printf("\n");
-	for (i = 0; i < image_size; i++) {
-		image[image_pixel_indexes[i]] = copied_image[i];
-	}
 }
 
 int*
