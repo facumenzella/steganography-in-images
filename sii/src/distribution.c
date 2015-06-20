@@ -170,10 +170,8 @@ createShadows(BYTE* image, int image_size, int n, int k) {
     int shadow_pixel_index = 0;
     // step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
     BYTE* section = calloc(k, sizeof(BYTE));
-    printf("Creating %d, shadows of size: %d\n with k: %d\n", n, image_size / k, k);
     BYTE** shadows = initializeShadows(image_size, n, k);
     int i;
-    printf("Shadows initialized\n");
     // step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
     for (i = 0; i < image_size; i++) {
         section[i % k] = image[i];
@@ -184,7 +182,6 @@ createShadows(BYTE* image, int image_size, int n, int k) {
             memset(section, 0, k);
         }
     }
-    printf("Shadows created\n");
     return shadows;
 }
 
