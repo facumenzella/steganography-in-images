@@ -25,6 +25,9 @@ unshufflePixels(int image_size, BYTE* image) {
 	printRow(image_pixel_indexes, image_size);
 	BYTE* unshuffledimage = calloc(image_size, sizeof(BYTE));
 	BYTE* copied_image = copyByteArray(image, image_size);
+	for (i = 0; i < image_size; i++) {
+		image[image_pixel_indexes[i]] = copied_image[i];
+	}
 }
 
 int*

@@ -91,8 +91,8 @@ revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_
         setValuesToByteMatrix(shadows_i_pixels, n_size, 0, 0);
     }
     randomize(seed);
-    BYTE* image = unshufflePixels(image_size, partial_image);
-    return image;
+    BYTEunshufflePixels(image_size, partial_image);
+    return partial_image;
 }
 
 void
