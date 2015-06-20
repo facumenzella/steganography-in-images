@@ -17,6 +17,7 @@ void distribute(char *file_name,
                 char* directory,
                 int n,
                 int k,
+                int bits_to_hide,
                 int seed,
                 main_error *err);
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size);

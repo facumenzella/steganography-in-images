@@ -44,7 +44,12 @@ runDistribution(Arguments arguments, main_error *err) {
     }
     printf("We have loaded the %d shadows\n", n);
     
-    distribute(file_name, image, image_size, shadow_images, directory, n, k, seed, err);
+    int bits_to_hide = 1;
+    if (k < 8) {
+        bits_to_hide = 2;
+    }
+    
+    distribute(file_name, image, image_size, shadow_images, directory, n, k, bits_to_hide, seed, err);
 }
 
 boolean
@@ -57,6 +62,7 @@ isValidKAgainstImageSize(const int k, const int image_size) {
 
 void
 distribute(char *file_name, BYTE *image, int image_size, BMPImage *shadow_images, char* directory, int n, int k,
+           int bits_to_hide,
            int seed, main_error *err) {
     /* step 1 - Use a key to generate a permutation sequence to permute the pixels
      of the secret image.
