@@ -27,7 +27,7 @@ static const char COULD_NOT_OPEN_FILE_ERROR[] = "We could not open the file you 
 static const char COULD_NOT_OPEN_DIR_ERROR[] = "We could not open the directory you provided";
 
 // Shadow errors
-static const char NOT_ENOUGH_SHADOWS_ERROR[] = "Not enough shadows. Why god? Why?";
+static const char NOT_ENOUGH_SHADOWS_ERROR[] = "Not enough porter images. Why god? Why?";
 
 typedef char *arguments_error;
 typedef char *distribution_error;
