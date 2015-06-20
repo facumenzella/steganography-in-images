@@ -2,6 +2,15 @@
 #include "../includes/imageUtils.h"
 
 boolean isValidKAgainstImageSize(const int k, const int image_size);
+void distribute(BYTE *image,
+                int image_size,
+                BYTE **shadow_images,
+                char* directory,
+                int n,
+                int k,
+                int bits_to_hide,
+                int seed,
+                main_error *err);
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size);
 BYTE* convertImageToArrayWithLoss(BYTE* image, int image_size);
 BYTE** createShadows(unsigned char* image, int image_size, int n, int k);
