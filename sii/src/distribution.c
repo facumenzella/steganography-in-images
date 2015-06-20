@@ -11,6 +11,8 @@ void distribute(BYTE *image,
                 int bits_to_hide,
                 int seed,
                 main_error *err);
+BMPImage* validateAndGetPorterImages(char *directory, int k, int n, main_error *err);
+int calculateBitsToHide(int k);
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size);
 BYTE* convertImageToArrayWithLoss(BYTE* image, int image_size);
 BYTE** createShadows(unsigned char* image, int image_size, int n, int k);
@@ -42,22 +44,13 @@ runDistribution(Arguments arguments, main_error *err) {
         return;
     }
     
-    BMPImage *porter_full_images = loadImages(directory, n, err);
+    BMPImage *porter_full_images = validateAndGetPorterImages(directory, k, n, err);
     if (porter_full_images == NULL) {
-        return; // we fucked up.
-    }
-    for (int i = 0; i < n; i++) {
-        if (isValidKAgainstImageSize(k, getImageSize(porter_full_images[i])) == FALSE) {
-            setError(err, IMAGE_SIZE_NOT_DIVISIBLE_BY_K_ERROR);
-            return;
-        }
+        return;
     }
     printf("We have loaded the %d full porters\n", n);
     
-    int bits_to_hide = 1;
-    if (k < 8) {
-        bits_to_hide = 2;
-    }
+    int bits_to_hide = calculateBitsToHide(k);
     
     BYTE **porter_images = calloc(n, sizeof(BYTE*));
     for (int i = 0; i < n ; i++) {
@@ -71,7 +64,7 @@ runDistribution(Arguments arguments, main_error *err) {
     for (int i = 0; i < n; i++) {
         io_error error = NULL;
         BMPImage image = porter_full_images[i];
-        setIndex(image, i+1);
+        setIndex(image, i+1); // this is really important because the reveal expects indexes between [1,2, ..., n]
         setSeed(image, seed);
         saveImage(image, PORTERS_DIRECTORY, &error);
         if (error != NULL) {
@@ -88,6 +81,30 @@ isValidKAgainstImageSize(const int k, const int image_size) {
         return TRUE;
     }
     return FALSE;
+}
+
+BMPImage *
+validateAndGetPorterImages(char *directory, int k, int n, main_error *err) {
+    BMPImage *porter_full_images = loadImages(directory, n, err);
+    if (porter_full_images == NULL) {
+        return NULL;
+    }
+    for (int i = 0; i < n; i++) {
+        if (isValidKAgainstImageSize(k, getImageSize(porter_full_images[i])) == FALSE) {
+            setError(err, IMAGE_SIZE_NOT_DIVISIBLE_BY_K_ERROR);
+            return NULL;
+        }
+    }
+    return porter_full_images;
+}
+
+int
+calculateBitsToHide(int k) {
+    int bits_to_hide = 1;
+    if (k < 8) {
+        bits_to_hide = 2;
+    }
+    return bits_to_hide;
 }
 
 void
