@@ -8,7 +8,7 @@ void handleErrorIfNeeded(char *error);
 
 int
 main(int argc, char * argv[]) {
-    
+        
     arguments_error error;
     Arguments arguments = validateArguments(argc, argv, &error);
     

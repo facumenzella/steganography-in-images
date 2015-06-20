@@ -22,9 +22,6 @@ static const char DIR_INVALID_ARGUMENT[] = "You have to provide either --directo
 
 // Arguments errors
 static const char IMAGE_SIZE_NOT_DIVISIBLE_BY_K_ERROR[] = "The size of the image must be multiple of k";
-// IO errors
-static const char COULD_NOT_OPEN_FILE_ERROR[] = "We could not open the file you provided";
-static const char COULD_NOT_OPEN_DIR_ERROR[] = "We could not open the directory you provided";
 
 // Shadow errors
 static const char NOT_ENOUGH_SHADOWS_ERROR[] = "Not enough porter images. Why god? Why?";

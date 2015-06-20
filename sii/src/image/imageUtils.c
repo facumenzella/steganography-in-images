@@ -28,14 +28,14 @@ boolean isBMP(char * path);
 
 BMPImage
 loadImage(char *path, io_error *err) {
-    printf("Trying to open:%s\n", path);
+//    printf("Trying to open:%s\n", path);
     int fileSize = 0, imageOffset = 0, imageSize = -1;
     BYTE *header = NULL, *image = NULL;
     char * imageName;
     FILE *file = NULL;
     file = fopen(path, READ_BINARY_MODE);
     if (file == NULL) {
-        printf("could not open: %s\n", path);
+//        printf("could not open: %s\n", path);
         setError(err, COULD_NOT_OPEN_FILE_ERROR);
         freeWhatNeedsToBeFree(header, image, file);
         return NULL;
@@ -77,7 +77,7 @@ loadImage(char *path, io_error *err) {
 }
 
 void
-saveImage(BMPImage image, char *path, io_error *err) {
+saveImage(BMPImage image, char const *path, io_error *err) {
     int offset = getOffset(image);
     int fileSize = getFilesize(image);
     FILE * file;
@@ -86,7 +86,7 @@ saveImage(BMPImage image, char *path, io_error *err) {
     strcat(fullPath, path);
     strcat(fullPath, getFilename(image));
     
-    printf("Trying to save: %s\n", fullPath);
+//    printf("Trying to save: %s\n", fullPath);
     
     file = fopen(fullPath, WRITE_BINARY_MODE);
     if(file == NULL) {
@@ -106,14 +106,12 @@ saveImage(BMPImage image, char *path, io_error *err) {
     fwrite(getHeader(image), sizeof(BYTE), offset, file);
     fwrite(getBMPImage(image), sizeof(BYTE), getImageSize(image), file);
     
-    printf("we saved and image of size: %d\n", offset + getImageSize(image));
-    
     fclose(file);
 }
 
 BMPImage*
 loadImages(char *dir, int n, io_error *err) {
-    printf("Fetching images from %s\n", dir);
+//    printf("Fetching images from %s\n", dir);
     DIR *pwd = NULL;
     NEXT_DIR curr = NULL;
     int imagesRead = 0;
@@ -169,7 +167,7 @@ loadImages(char *dir, int n, io_error *err) {
 
 int
 countImagesInDirectory(char *dir, io_error *err) {
-    printf("Fetching images from %s\n", dir);
+//    printf("Fetching images from %s\n", dir);
     DIR *pwd = NULL;
     NEXT_DIR curr = NULL;
     int shadows = 0;
@@ -234,12 +232,12 @@ readImageSize(FILE *file, int *imageSize) {
     int hor, ver;
     fseek(file, IMAGE_HORIZONTAL_RESOLUTION, SEEK_SET);
     fread(&hor, sizeof(int), 1, file);
-    printf("\t horizontal res: %d - read offset %#010x from the beginning of file\n", hor, IMAGE_HORIZONTAL_RESOLUTION);
+//    printf("\t horizontal res: %d - read offset %#010x from the beginning of file\n", hor, IMAGE_HORIZONTAL_RESOLUTION);
     rewind(file);
     fseek(file, IMAGE_VERTICAL_RESOLUTION, SEEK_SET);
     fread(&ver, sizeof(int), 1, file);
     //    printf("\t vertical res: %d - read offset %#010x from the beginning of file\n", ver, IMAGE_VERTICAL_RESOLUTION);
-    printf("\t Image size = %d\n", hor * ver);
+//    printf("\t Image size = %d\n", hor * ver);
     *imageSize = hor * ver;
     rewind(file);
 }
