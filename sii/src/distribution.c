@@ -8,11 +8,10 @@ void distribute(BYTE *image,
                 char* directory,
                 int n,
                 int k,
-                int bits_to_hide,
                 int seed,
                 main_error *err);
-BMPImage* validateAndGetPorterImages(char *directory, int k, int n, main_error *err);
-int calculateBitsToHide(int k);
+BMPImage* validateAndGetPorterImages(char *directory, const int shadow_size, int n, main_error *err);
+boolean isPorterMaterial(const int shadow_size, const int porter_image_size);
 BYTE* convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size);
 BYTE* convertImageToArrayWithLoss(BYTE* image, int image_size);
 BYTE** createShadows(unsigned char* image, int image_size, int n, int k);
@@ -28,10 +27,10 @@ runDistribution(Arguments arguments, main_error *err) {
     BMPImage bmp = loadImage(file_name, err);
     if (bmp == NULL) {
         // we fucked up
-        setError(err, "We could not open the secret image\n");
+        setError(err, NO_SECRET_IMAGE);
         return;
     }
-    printf("Secret image %s was succesfully loaded\n", file_name);
+    printf(SECRET_IMAGE_SUCCESS, file_name);
     
     BYTE *image = getBMPImage(bmp);
     char *directory = getDirectory(arguments);
@@ -44,23 +43,20 @@ runDistribution(Arguments arguments, main_error *err) {
         return;
     }
     
-    BMPImage *porter_full_images = validateAndGetPorterImages(directory, k, n, err);
+    BMPImage *porter_full_images = validateAndGetPorterImages(directory, image_size / k, n, err);
     if (porter_full_images == NULL) {
         return;
     }
-    printf("We have loaded the %d full porters\n", n);
-    
-    int bits_to_hide = calculateBitsToHide(k);
     
     BYTE **porter_images = calloc(n, sizeof(BYTE*));
     for (int i = 0; i < n ; i++) {
         porter_images[i] = getBMPImage(porter_full_images[i]);
     }
-    printf("We have loaded the %d porter images\n", n);
+    printf(PORTER_IMAGES_SUCCESS, n);
     
-    distribute(image, image_size, porter_images, directory, n, k, bits_to_hide, seed, err);
+    distribute(image, image_size, porter_images, directory, n, k, seed, err);
     
-    printf("We now save the images with the hidden data\n");
+    printf("%s", STEGANOGRAPHY_SUCCESS);
     for (int i = 0; i < n; i++) {
         io_error error = NULL;
         BMPImage image = porter_full_images[i];
@@ -68,11 +64,11 @@ runDistribution(Arguments arguments, main_error *err) {
         setSeed(image, seed);
         saveImage(image, PORTERS_DIRECTORY, &error);
         if (error != NULL) {
-            printf("error: %s\n", error);
+            setError(err, error);
             return;
         }
     }
-    printf("We are done here\n");
+    printf("%s", DISTRIBUTION_SUCCESS);
 }
 
 boolean
@@ -83,34 +79,39 @@ isValidKAgainstImageSize(const int k, const int image_size) {
     return FALSE;
 }
 
+boolean
+isPorterMaterial(const int shadow_size, const int porter_image_size) {
+    if (8 * shadow_size == porter_image_size) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
 BMPImage *
-validateAndGetPorterImages(char *directory, int k, int n, main_error *err) {
+validateAndGetPorterImages(char *directory, const int shadow_size, int n, main_error *err) {
     BMPImage *porter_full_images = loadImages(directory, n, err);
     if (porter_full_images == NULL) {
+        setError(err, NO_PORTER_IMAGES);
         return NULL;
     }
     for (int i = 0; i < n; i++) {
-        if (isValidKAgainstImageSize(k, getImageSize(porter_full_images[i])) == FALSE) {
-            setError(err, IMAGE_SIZE_NOT_DIVISIBLE_BY_K_ERROR);
+        if (isPorterMaterial(shadow_size, getImageSize(porter_full_images[i])) == FALSE) {
+            setError(err, INVALID_PORTER_IMAGE_SIZE);
             return NULL;
         }
     }
     return porter_full_images;
 }
 
-int
-calculateBitsToHide(int k) {
-    int bits_to_hide = 1;
-    if (k < 8) {
-        bits_to_hide = 2;
-    }
-    return bits_to_hide;
-}
-
 void
-distribute(BYTE *image, int image_size, BYTE **shadow_images, char* directory, int n, int k,
-           int bits_to_hide,
-           int seed, main_error *err) {
+distribute(BYTE *image,
+           int image_size,
+           BYTE **shadow_images,
+           char* directory,
+           int n,
+           int k,
+           int seed,
+           main_error *err) {
     /* step 1 - Use a key to generate a permutation sequence to permute the pixels
      of the secret image.
      */
