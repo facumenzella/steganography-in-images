@@ -8,8 +8,8 @@ You may be wondering...how do I run this amazing app?
 Well, it's easy.
 
 ```
-SSIApp -d | -r [-dir <DIRECTORY>] [-h] -k <NUMBER> [-n <NUMBER>]  -s <IMAGE>
-
+/sii -d -s ../lena/lena512.bmp -k 8 -n 8 -dir ../porters/i
+ 
  -d,--distribute                Distribute a source image into other shadow images
  -dir,--directory <DIRECTORY>   Either he directory where the images where the secret will be
                                 distributed (in case you have chosen the option (-d)), or where

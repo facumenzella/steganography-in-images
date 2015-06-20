@@ -34,8 +34,8 @@ sii:
 	@echo -d[--distribution] Distribution mode.
 	@echo -r[--recover] Recover mode.
 	@echo -s[--secret] Name of an image of with bmp extension. If you choose distribution mode, its the image to hide. If you choose recover mode, its the output file.
-	@echo -k[--minShadows] Minimum amount of shadows to recover secret.
-	@echo -n[--totalShadows] Total amount of shadows where the secret will be distributed.
+	@echo -k[--mshadows] Minimum amount of shadows to recover secret.
+	@echo -n[--fshadows] Total amount of shadows where the secret will be distributed.
 	@echo -dir[--directory] If you choose distribution mode, its the folder where the porter images will be. If you choose recover mode, its the folder where the actual porter images are.
 
 # gcc for debugging mode with lldb or gdb
