@@ -25,6 +25,8 @@ void permutePixels(int n, BYTE* image);
 BYTE** createShadows(unsigned char* image, int image_size, int n, int k);
 void evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, int k);
 BYTE ** initializeShadows(int image_size, int n, int k);
+void hideInformation(BYTE *shadowImage_bytes, BYTE *toHide, int size_to_hide, main_error *err);
+boolean isValidKAgainstImageSize(const int k, const int image_size);
 
 static const char *PORTERS_DIRECTORY = "../porters/";
 

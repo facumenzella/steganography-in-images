@@ -26,16 +26,6 @@ void freeWhatNeedsToBeFree(BYTE *header, BYTE *image, FILE *file);
 boolean isDir(char *path);
 boolean isBMP(char * path);
 
-int
-main(int argc, char * argv[]) {
-    
-    io_error error;
-    BMPImage image = loadImage("../lena/lena512.bmp", &error);
-    
-    saveImage(image, "../porters/", &error);
-}
-
-
 BMPImage
 loadImage(char *path, io_error *err) {
     printf("Trying to open:%s\n", path);
@@ -107,11 +97,11 @@ saveImage(BMPImage image, char *path, io_error *err) {
     
     char *header_with_out_seed_and_porter = (char*)getHeader(image);
     
-    //    uint16_t seed = getSeed(image);
-    //    memcpy(&header_with_out_seed_and_porter[SEED_INDEX], &seed, sizeof(seed));
-    //
-    //    uint16_t porter = getIndex(image);
-    //    memcpy(&header_with_out_seed_and_porter[PORTER_INDEX], &porter, sizeof(porter));
+    uint16_t seed = getSeed(image);
+    memcpy(&header_with_out_seed_and_porter[SEED_INDEX], &seed, sizeof(seed));
+    
+    uint16_t porter = getIndex(image);
+    memcpy(&header_with_out_seed_and_porter[PORTER_INDEX], &porter, sizeof(porter));
     
     fwrite(getHeader(image), sizeof(BYTE), offset, file);
     fwrite(getBMPImage(image), sizeof(BYTE), getImageSize(image), file);
@@ -154,6 +144,7 @@ loadImages(char *dir, int n, io_error *err) {
             if (isBMP(fullPath)) {
                 BMPImage shadowImage = loadImage(fullPath, err);
                 //                printf("\topening %s \n", getFilename(shadowImage));
+                
                 if (*err != NULL) {
                     closedir(pwd);
                     free(fullPath);

@@ -33,6 +33,7 @@ runReveal(Arguments arguments, main_error *err) {
     for (int i = 1; i < min__porters_to_get_secret; i++) {
         int auxSeed = -1;
         indexes[i] = getIndex(porters_full_images[i]);
+        printf("index: %d\n", indexes[i]);
         auxSeed = getSeed(porters_full_images[i]);
         if (auxSeed != seed) {
             printf("HLY SHIT DIFFERENTES SEEDS\n");
@@ -185,22 +186,6 @@ revealInformation(BMPImage shadowImage, int size_to_reveal, main_error *err) {
         bi++;
     }
     return revealed_shadow;
-}
-
-void int2bin(int number) {
-    int binaryNumber[100],i=1,j;
-    int quotient = number;
-
-    while(quotient!=0){
-        
-        binaryNumber[i++]= quotient % 2;
-        
-        quotient = quotient / 2;
-        
-    }
-    for(j = i -1 ;j> 0;j--)
-        printf("%d",binaryNumber[j]);
-    printf("\n");
 }
 
 // int

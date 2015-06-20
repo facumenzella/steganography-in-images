@@ -8,6 +8,7 @@ BYTE** createShadows(unsigned char* image, int image_size, int n, int k);
 void evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, int k);
 BYTE ** initializeShadows(int image_size, int n, int k);
 void hideInformation(BYTE *shadowImage_bytes, BYTE *toHide, int size_to_hide, main_error *err);
+void int2bin(int number);
 
 void
 runDistribution(Arguments arguments, main_error *err) {
@@ -61,7 +62,7 @@ runDistribution(Arguments arguments, main_error *err) {
     for (int i = 0; i < n; i++) {
         io_error error = NULL;
         BMPImage image = porter_full_images[i];
-        setIndex(image, i);
+        setIndex(image, i+1);
         setSeed(image, seed);
         saveImage(image, PORTERS_DIRECTORY, &error);
         if (error != NULL) {
@@ -102,7 +103,7 @@ distribute(BYTE *image, int image_size, BYTE **shadow_images, char* directory, i
     BYTE **shadows = createShadows(E, image_size, n, k);
     
     for (int i = 0; i < n; i++) {
-//        hideInformation(shadow_images[i], shadows[i], image_size/k, err);
+        hideInformation(shadow_images[i], shadows[i], image_size/k, err);
     }
 }
 
@@ -142,7 +143,7 @@ createShadows(BYTE* image, int image_size, int n, int k) {
     int shadow_pixel_index = 0;
     // step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
     BYTE* section = calloc(k, sizeof(BYTE));
-    printf("Creating %d, shadows from size: %d\n with k: %d\n", n, image_size / k, k);
+    printf("Creating %d, shadows of size: %d\n with k: %d\n", n, image_size / k, k);
     BYTE** shadows = initializeShadows(image_size, n, k);
     int i;
     printf("Shadows initialized\n");
@@ -192,13 +193,30 @@ hideInformation(BYTE *shadowImage_bytes, BYTE *toHide, int size_to_hide, main_er
     for (int i = 0; i < size_to_hide; i++) {
         // we iterate over the bytes to hide
         BYTE byte_toHide = toHide[i];
+        //        printf("byte to hide: %d binary: ", byte_toHide); int2bin(byte_toHide); printf("\n");
         for (int j = 7; j >= 0; j--) {
             // we iterate over the bits of the byte to hide
             uint8_t bit = getBit(byte_toHide, j);
+            //            printf("bit to hide: %d\n", bit);
             BYTE shadowImage_byte = shadowImage_bytes[bi];
+            //            printf("porter byte: "); int2bin(shadowImage_byte); printf("\n");
             BYTE porter_byte = overrideLessSignificantBit(shadowImage_byte, bit);
             memcpy(&shadowImage_bytes[bi], &porter_byte, sizeof(BYTE));
+            //            printf("porter byte modified: "); int2bin(shadowImage_bytes[bi]); printf("\n");
             bi++;
         }
     }
+}
+
+void int2bin(int number) {
+    int binaryNumber[100],i=1,j;
+    int quotient = number;
+    
+    while(quotient!=0){
+        binaryNumber[i++]= quotient % 2;
+        quotient = quotient / 2;
+    }
+    for(j = i -1 ;j> 0;j--)
+        printf("%d",binaryNumber[j]);
+    printf("\n");
 }
