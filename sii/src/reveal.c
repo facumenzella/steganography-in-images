@@ -25,12 +25,12 @@ revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_
 		partial_image_index += l;
 		setValuesToByteMatrix(shadows_i_pixels, n_size, 0, 0);
 	}
-	randomize(seed);
+	// randomize(5);
  	// int permuted_image_size;
  	// Si está prendido el flag de revelar la imagen sin pérdida, entonces
  	// llamamos a la función de abajo!!!
  	// BYTE* image = revealPartialImageWithoutLoss(partial_image, partial_image_index);
- 	// permutePixels(permuted_image_size, image);
+ 	//permutePixels(partial_image_index, partial_image);
  	// TENEMOS QUE DEVOLVER EL TAMAÑO DE LA NUEVA IMAGEN??? O ESO SE ENCUENTRA EN LAS SOMBRAS???
  	return partial_image;
  }

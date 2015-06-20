@@ -33,6 +33,7 @@ BYTE** makeModularMatrix(int** matrix, int dimension);
 void makeModularIntMatrix(int** matrix, int dimension);
 void setValuesToIntMatrix(int** matrix, int rows, int columns, int value);
 void setValuesToByteMatrix(BYTE** matrix, int rows, int columns, BYTE value);
-void permutePixels(int n, BYTE* image);
+void shufflePixels(int image_size, BYTE* image);
+void unshufflePixels(int image_size, BYTE* image);
 
 #endif
