@@ -1,6 +1,5 @@
 #include "../includes/reveal.h"
 
-
 BYTE* revealInformation(BMPImage shadowImage, int size_to_reveal, main_error *err);
 BYTE* revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_size, int seed);
 void initializeEquations(int** equations, int* n_values, int n_size, int k);
@@ -16,27 +15,30 @@ void int2bin(int number);
 void
 runReveal(Arguments arguments, main_error *err) {
     char *file_name = getSecret(arguments);
-    printf("We will save the final image in: %s\n", file_name);
     
     char *directory = getDirectory(arguments);
-    printf("We will get the porter images from: %s\n", directory);
     int min__porters_to_get_secret = getMinShadowsToRecoverSecret(arguments);
+    printf(STARTING_REVEAL_PROCESS, min__porters_to_get_secret, directory);
     
     int *indexes = calloc(min__porters_to_get_secret, sizeof(int));
-    
-    printf("Fetching the %d porters\n", min__porters_to_get_secret);
+    if (indexes == NULL) {
+        setError(err, CALLOC_ERROR);
+        return;
+    }
     BMPImage *porters_full_images = loadImages(directory, min__porters_to_get_secret, err);
+    if (porters_full_images == NULL) {
+        return;
+    }
     BYTE **porter_images_shadows = calloc(min__porters_to_get_secret, sizeof(BYTE*));
     if (porter_images_shadows == NULL) {
-        printf("HOLY SHIT \n");
+        setError(err, CALLOC_ERROR);
     }
     
     int shadow_size = getImageSize(porters_full_images[0]) / min__porters_to_get_secret;
-    printf("Every shadow will be of size: %d\n", shadow_size);
     
     porter_images_shadows[0] = revealInformation(porters_full_images[0],
-                                         shadow_size,
-                                         err);
+                                                 shadow_size,
+                                                 err);
     indexes[0] = getIndex(porters_full_images[0]);
     int seed = getSeed(porters_full_images[0]);
     for (int i = 1; i < min__porters_to_get_secret; i++) {
@@ -44,11 +46,12 @@ runReveal(Arguments arguments, main_error *err) {
         indexes[i] = getIndex(porters_full_images[i]);
         auxSeed = getSeed(porters_full_images[i]);
         if (auxSeed != seed) {
-            printf("HLY SHIT DIFFERENTES SEEDS\n");
+            setError(err, DIFFERENT_SEEDS_FOR_PORTERS);
+            return;
         }
         porter_images_shadows[i] = revealInformation(porters_full_images[i],
-                                             shadow_size,
-                                             err);
+                                                     shadow_size,
+                                                     err);
     }
     BYTE *image = revealImage(indexes,
                               min__porters_to_get_secret,
@@ -66,13 +69,16 @@ runReveal(Arguments arguments, main_error *err) {
                                             -1,
                                             image,
                                             &error);
+    if (revealed_secret == NULL) {
+        return;
+    }
     
     io_error save = NULL;
     saveImage(revealed_secret, file_name, &save);
     if (save != NULL) {
-        printf("fuck\n");
+        return;
     }
-    printf("We are done here\n");
+    printf("%s", REVEAL_SUCCESS);
 }
 
 BYTE*
@@ -179,11 +185,11 @@ revealInformation(BMPImage shadowImage, int size_to_reveal, main_error *err) {
         for (int i = 0; i < 8; i++) {
             revealed_byte = revealed_byte << 1;
             BYTE byte_to_reveal = shadow_image_bytes[j];
-//            printf("byte to reveal: "); int2bin(byte_to_reveal); printf("\n");
+            //            printf("byte to reveal: "); int2bin(byte_to_reveal); printf("\n");
             uint8_t bit = getBit(byte_to_reveal, 0);
-//            printf("bit%d: %d\n", i, bit);
+            //            printf("bit%d: %d\n", i, bit);
             revealed_byte = overrideLessSignificantBit(revealed_byte, bit);
-//            printf("revealed byte: "); int2bin(revealed_byte); printf("\n");
+            //            printf("revealed byte: "); int2bin(revealed_byte); printf("\n");
             j++;
         }
         memcpy(&revealed_shadow[bi], &revealed_byte, sizeof(BYTE));
