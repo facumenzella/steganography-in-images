@@ -20,7 +20,7 @@ runDistribution(Arguments arguments, main_error *err) {
         return;
     }
     printf("Secret image %s was succesfully loaded\n", file_name);
-
+    
     BYTE *image = getBMPImage(bmp);
     char *directory = getDirectory(arguments);
     int image_size = getImageSize(bmp);
@@ -87,8 +87,8 @@ distribute(BYTE *image, int image_size, BYTE **shadow_images, char* directory, i
     /* step 1 - Use a key to generate a permutation sequence to permute the pixels
      of the secret image.
      */
-    randomize(seed);
-    shufflePixels(n, image);
+    //    randomize(seed);
+    //    shufflePixels(n, image);
     
     /* step 2 - Sequentially read in gray values of D* and then store in E according to the rule below.
      For each read-in gray value pi of D* :
@@ -139,25 +139,25 @@ convertImageToArrayWithoutLoss(BYTE* image, int image_size, int* new_image_size)
 
 BYTE**
 createShadows(BYTE* image, int image_size, int n, int k) {
-	int shadow_pixel_index = 0;
-	// step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
-	BYTE* section = calloc(k, sizeof(BYTE));
-    printf("Creating shadows from size: %d\n with k: %d\n", image_size, k);
-	BYTE** shadows = initializeShadows(image_size, n, k);
-	int i;
+    int shadow_pixel_index = 0;
+    // step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
+    BYTE* section = calloc(k, sizeof(BYTE));
+    printf("Creating %d, shadows from size: %d\n with k: %d\n", n, image_size / k, k);
+    BYTE** shadows = initializeShadows(image_size, n, k);
+    int i;
     printf("Shadows initialized\n");
-	// step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
-	for (i = 0; i < image_size; i++) {
-		section[i % k] = image[i];
-		if ((i + 1) % k == 0) {
-			// step 4 - Generate n pixels for the n shadow images
-			evaluateSection(section, shadows, shadow_pixel_index, n, k);
-			shadow_pixel_index++;
-			memset(section, 0, k);
-		}
-	}
+    // step 5 - Repeat Steps 3 and 4 until all elements of the array E are processed.
+    for (i = 0; i < image_size; i++) {
+        section[i % k] = image[i];
+        if ((i + 1) % k == 0) {
+            // step 4 - Generate n pixels for the n shadow images
+            evaluateSection(section, shadows, shadow_pixel_index, n, k);
+            shadow_pixel_index++;
+            memset(section, 0, k);
+        }
+    }
     printf("Shadows created\n");
-	return shadows;
+    return shadows;
 }
 
 void
@@ -194,9 +194,11 @@ hideInformation(BYTE *shadowImage_bytes, BYTE *toHide, int size_to_hide, main_er
         BYTE byte_toHide = toHide[i];
         for (int j = 7; j >= 0; j--) {
             // we iterate over the bits of the byte to hide
-            int bit = getBit(byte_toHide, j);
+            uint8_t bit = getBit(byte_toHide, j);
             BYTE shadowImage_byte = shadowImage_bytes[bi];
-            shadowImage_bytes[bi++] = overrideLessSignificantBit(shadowImage_byte, bit);
+            BYTE porter_byte = overrideLessSignificantBit(shadowImage_byte, bit);
+            memcpy(&shadowImage_bytes[bi], &porter_byte, sizeof(BYTE));
+            bi++;
         }
     }
 }

@@ -4,7 +4,7 @@
 static const char DISTRIBUTE_WELCOME_MSG[] = "You have chosen Distribution mode...";
 static const char RECOVER_WELCOME_MSG[] = "You have chosen Recover mode...";
 
-void handleErrorIfNeeded(arguments_error error);
+void handleErrorIfNeeded(char *error);
 
 int
 main(int argc, char * argv[]) {
@@ -22,14 +22,14 @@ main(int argc, char * argv[]) {
             break;
         case RECOVER:
             printf("%s\n", RECOVER_WELCOME_MSG);
+            runReveal(arguments, &err);
             break;
     }
     handleErrorIfNeeded((char*)err);
 }
 
-
 void
-handleErrorIfNeeded(char *error) {
+handleErrorIfNeeded(char * error) {
     if (error != NULL) {
         printf("%s\n", error);
         EXIT;

@@ -12,5 +12,6 @@
 #include "./constants.h"
 #include "./cmd.h"
 #include "./distribution.h"
+#include "./reveal.h"
 
 #endif
