@@ -7,12 +7,12 @@ typedef struct image_t {
 	int imageSize;
 	BYTE *header;
 	BYTE *image;
-    int n;
-    int seed;
+    uint16_t n;
+    uint16_t seed;
 } image_t;
 
 BMPImage
-initBMPImage(char *filename, int fileSize, int offset, int imageSize, BYTE *header, BYTE *image, image_error *error) {
+initBMPImage(char *filename, int fileSize, int offset, int imageSize, BYTE *header, uint16_t seed, uint16_t porter, BYTE *image, image_error *error) {
 	// We calloc the hole struct
   BMPImage imageStruct = calloc(1, sizeof(struct image_t));
 	if (imageStruct == NULL) {
@@ -20,6 +20,10 @@ initBMPImage(char *filename, int fileSize, int offset, int imageSize, BYTE *head
 		return NULL;
 	}
 
+    //seed and porter
+    imageStruct->seed = seed;
+    imageStruct->n = porter;
+    
   // We reserve space for the filename
 	imageStruct->filename = calloc(strlen(filename) + 1, sizeof(BYTE));
 	if (imageStruct->filename == NULL) {
@@ -108,7 +112,7 @@ getIndex(BMPImage image) {
 }
 
 void
-setIndex(BMPImage image, int n) {
+setIndex(BMPImage image, uint16_t n) {
     image->n = n;
 }
 
@@ -118,13 +122,14 @@ getSeed(BMPImage image) {
 }
 
 void
-setSeed(BMPImage image, int seed) {
+setSeed(BMPImage image, uint16_t seed) {
     image->seed = seed;
 }
 
 BMPImage
 clone(BMPImage image, io_error *err) {
-	BMPImage newImage = initBMPImage(image->filename, image->fileSize, image->offset, image->imageSize, image->header, image->image, err);
+	BMPImage newImage = initBMPImage(image->filename, image->fileSize, image->offset, image->imageSize, image->header,
+                                     image->seed, image->n, image->image, err);
 	if (*err != NULL) {
 		return NULL;
 	}

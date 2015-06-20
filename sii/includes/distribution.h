@@ -19,4 +19,6 @@ void evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int 
 BYTE ** initializeShadows(int image_size, int n, int k);
 void hideInformation(BMPImage shadowImage, BYTE *toHide, int to_hide_size, main_error *err);
 
+static const char *PORTERS_DIRECTORY = "../porters/";
+
 #endif

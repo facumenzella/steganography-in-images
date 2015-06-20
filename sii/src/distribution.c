@@ -72,12 +72,12 @@ distribute(char *file_name, BYTE *image, int image_size, char* directory, int n,
         hideInformation(shadowImages[i], shadows[i], image_size/k, err);
     }
     printf("We are done here\nWe now save the images with the hidden data\n");
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < n; i++) {
         io_error error = NULL;
         BMPImage image = shadowImages[i];
         setIndex(image, i);
         setSeed(image, seed);
-        saveImage(image, "./", &error);
+        saveImage(image, PORTERS_DIRECTORY, &error);
         if (error != NULL) {
             printf("error: %s\n", error);
             return;
