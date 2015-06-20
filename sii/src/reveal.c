@@ -33,7 +33,6 @@ runReveal(Arguments arguments, main_error *err) {
     for (int i = 1; i < min__porters_to_get_secret; i++) {
         int auxSeed = -1;
         indexes[i] = getIndex(porters_full_images[i]);
-        printf("index: %d\n", indexes[i]);
         auxSeed = getSeed(porters_full_images[i]);
         if (auxSeed != seed) {
             printf("HLY SHIT DIFFERENTES SEEDS\n");
@@ -90,8 +89,9 @@ revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_
         partial_image_index += l;
         setValuesToByteMatrix(shadows_i_pixels, n_size, 0, 0);
     }
+    printf("seed %d\n", seed);
     randomize(seed);
-    BYTEunshufflePixels(image_size, partial_image);
+    unshufflePixels(image_size, partial_image);
     return partial_image;
 }
 

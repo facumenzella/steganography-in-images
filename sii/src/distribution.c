@@ -112,11 +112,6 @@ distribute(BYTE *image,
            int k,
            int seed,
            main_error *err) {
-    /* step 1 - Use a key to generate a permutation sequence to permute the pixels
-     of the secret image.
-     */
-    //    randomize(seed);
-    //    shufflePixels(n, image);
     
     /* step 2 - Sequentially read in gray values of D* and then store in E according to the rule below.
      For each read-in gray value pi of D* :
@@ -125,6 +120,12 @@ distribute(BYTE *image,
      Store these two values in E (first 250, then pi - 250).
      */
     BYTE *E = convertImageToArrayWithLoss(image, image_size);
+    
+    /* step 1 - Use a key to generate a permutation sequence to permute the pixels
+     of the secret image.
+     */
+    randomize(seed);
+    shufflePixels(image_size, E);
     
     // we are cool, so we continue
     BYTE **shadows = createShadows(E, image_size, n, k);
