@@ -26,6 +26,16 @@ void freeWhatNeedsToBeFree(BYTE *header, BYTE *image, FILE *file);
 boolean isDir(char *path);
 boolean isBMP(char * path);
 
+int
+main(int argc, char * argv[]) {
+    
+    io_error error;
+    BMPImage image = loadImage("../lena/lena512.bmp", &error);
+    
+    saveImage(image, "../porters/", &error);
+}
+
+
 BMPImage
 loadImage(char *path, io_error *err) {
     printf("Trying to open:%s\n", path);
@@ -49,7 +59,6 @@ loadImage(char *path, io_error *err) {
     readImageSize(file, &imageSize);
     
     header = calloc(imageOffset, sizeof(BYTE));
-    
     if (header == NULL) {
         setError(err, CALLOC_ERROR);
         freeWhatNeedsToBeFree(header, image, file);
@@ -98,14 +107,16 @@ saveImage(BMPImage image, char *path, io_error *err) {
     
     char *header_with_out_seed_and_porter = (char*)getHeader(image);
     
-    uint16_t seed = getSeed(image);
-    memcpy(&header_with_out_seed_and_porter[SEED_INDEX], &seed, sizeof(seed));
+    //    uint16_t seed = getSeed(image);
+    //    memcpy(&header_with_out_seed_and_porter[SEED_INDEX], &seed, sizeof(seed));
+    //
+    //    uint16_t porter = getIndex(image);
+    //    memcpy(&header_with_out_seed_and_porter[PORTER_INDEX], &porter, sizeof(porter));
     
-    uint16_t porter = getIndex(image);
-    memcpy(&header_with_out_seed_and_porter[PORTER_INDEX], &porter, sizeof(porter));
-    
-    fwrite(header_with_out_seed_and_porter, sizeof(BYTE), offset, file);
+    fwrite(getHeader(image), sizeof(BYTE), offset, file);
     fwrite(getBMPImage(image), sizeof(BYTE), getImageSize(image), file);
+    
+    printf("we saved and image of size: %d\n", offset + getImageSize(image));
     
     fclose(file);
 }
@@ -215,7 +226,7 @@ void
 readFileSize(FILE *file, int *fileSize) {
     fseek(file, FILE_SIZE_OFFSET, SEEK_SET);
     fread(fileSize, sizeof(int), 1, file);
-    //    printf("\t file size: %d - read offset %#010x from the beginning of file\n", *fileSize, FILE_SIZE_OFFSET);
+    printf("\t file size: %d - read offset %#010x from the beginning of file\n", *fileSize, FILE_SIZE_OFFSET);
     rewind(file);
 }
 
@@ -223,7 +234,7 @@ void
 readImageOffset(FILE *file, int *imageOffset) {
     fseek(file, IMAGE_OFFSET_OFFSET, SEEK_SET);
     fread(imageOffset, sizeof(int), 1, file);
-    //    printf("\t imageoffset: %d - read offset %#010x from the beginning of file\n", *imageOffset, IMAGE_OFFSET_OFFSET);
+    printf("\t imageoffset: %d - read offset %#010x from the beginning of file\n", *imageOffset, IMAGE_OFFSET_OFFSET);
     rewind(file);
 }
 
@@ -232,26 +243,26 @@ readImageSize(FILE *file, int *imageSize) {
     int hor, ver;
     fseek(file, IMAGE_HORIZONTAL_RESOLUTION, SEEK_SET);
     fread(&hor, sizeof(int), 1, file);
-    //    printf("\t horizontal res: %d - read offset %#010x from the beginning of file\n", hor, IMAGE_HORIZONTAL_RESOLUTION);
+    printf("\t horizontal res: %d - read offset %#010x from the beginning of file\n", hor, IMAGE_HORIZONTAL_RESOLUTION);
     rewind(file);
     fseek(file, IMAGE_VERTICAL_RESOLUTION, SEEK_SET);
     fread(&ver, sizeof(int), 1, file);
-    //    printf("\t vertical res: %d - read offset %#010x from the beginning of file\n", ver, IMAGE_VERTICAL_RESOLUTION);
-    rewind(file);
-    //    printf("\t Image size = %d\n", hor * ver);
+    printf("\t vertical res: %d - read offset %#010x from the beginning of file\n", ver, IMAGE_VERTICAL_RESOLUTION);
+    printf("\t Image size = %d\n", hor * ver);
     *imageSize = hor * ver;
+    rewind(file);
 }
 
 void
 readHeader(FILE *file, BYTE *header, int headerSize) {
-    rewind(file);
+    fseek(file, 0, SEEK_SET);
     fread(header, sizeof(BYTE), headerSize, file);
     rewind(file);
 }
 
 void
 readImage(FILE *file, int imageOffset, int imageSize, BYTE *image, io_error *err) {
-    fseek(file, imageOffset + 1, SEEK_SET);
+    fseek(file, imageOffset, SEEK_SET);
     fread(image, sizeof(BYTE), imageSize, file);
     rewind(file);
 }

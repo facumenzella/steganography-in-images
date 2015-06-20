@@ -10,10 +10,9 @@
 #include "./math.h"
 
 void runDistribution(Arguments arguments, main_error *err);
-void distribute(char *file_name,
-                BYTE *image,
+void distribute(BYTE *image,
                 int image_size,
-                BMPImage *shadow_images,
+                BYTE **shadow_images,
                 char* directory,
                 int n,
                 int k,
@@ -26,7 +25,6 @@ void permutePixels(int n, BYTE* image);
 BYTE** createShadows(unsigned char* image, int image_size, int n, int k);
 void evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, int k);
 BYTE ** initializeShadows(int image_size, int n, int k);
-void hideInformation(BMPImage shadowImage, BYTE *toHide, int to_hide_size, main_error *err);
 
 static const char *PORTERS_DIRECTORY = "../porters/";
 

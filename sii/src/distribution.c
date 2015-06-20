@@ -7,7 +7,7 @@ BYTE* convertImageToArrayWithLoss(BYTE* image, int image_size);
 BYTE** createShadows(unsigned char* image, int image_size, int n, int k);
 void evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, int k);
 BYTE ** initializeShadows(int image_size, int n, int k);
-void hideInformation(BMPImage shadowImage, BYTE *toHide, int to_hide_size, main_error *err);
+void hideInformation(BYTE *shadowImage_bytes, BYTE *toHide, int size_to_hide, main_error *err);
 
 void
 runDistribution(Arguments arguments, main_error *err) {
@@ -32,24 +32,44 @@ runDistribution(Arguments arguments, main_error *err) {
         return;
     }
     
-    BMPImage *shadow_images = loadImages(directory, n, err);
-    if (shadow_images == NULL) {
+    BMPImage *porter_full_images = loadImages(directory, n, err);
+    if (porter_full_images == NULL) {
         return; // we fucked up.
     }
     for (int i = 0; i < n; i++) {
-        if (isValidKAgainstImageSize(k, getImageSize(shadow_images[i])) == FALSE) {
+        if (isValidKAgainstImageSize(k, getImageSize(porter_full_images[i])) == FALSE) {
             setError(err, IMAGE_SIZE_NOT_DIVISIBLE_BY_K_ERROR);
             return;
         }
     }
-    printf("We have loaded the %d shadows\n", n);
+    printf("We have loaded the %d full porters\n", n);
     
     int bits_to_hide = 1;
     if (k < 8) {
         bits_to_hide = 2;
     }
     
-    distribute(file_name, image, image_size, shadow_images, directory, n, k, bits_to_hide, seed, err);
+    BYTE **porter_images = calloc(n, sizeof(BYTE*));
+    for (int i = 0; i < n ; i++) {
+        porter_images[i] = getBMPImage(porter_full_images[i]);
+    }
+    printf("We have loaded the %d porter images\n", n);
+    
+    distribute(image, image_size, porter_images, directory, n, k, bits_to_hide, seed, err);
+    
+    printf("We now save the images with the hidden data\n");
+    for (int i = 0; i < n; i++) {
+        io_error error = NULL;
+        BMPImage image = porter_full_images[i];
+        setIndex(image, i);
+        setSeed(image, seed);
+        saveImage(image, PORTERS_DIRECTORY, &error);
+        if (error != NULL) {
+            printf("error: %s\n", error);
+            return;
+        }
+    }
+    printf("We are done here\n");
 }
 
 boolean
@@ -61,7 +81,7 @@ isValidKAgainstImageSize(const int k, const int image_size) {
 }
 
 void
-distribute(char *file_name, BYTE *image, int image_size, BMPImage *shadow_images, char* directory, int n, int k,
+distribute(BYTE *image, int image_size, BYTE **shadow_images, char* directory, int n, int k,
            int bits_to_hide,
            int seed, main_error *err) {
     /* step 1 - Use a key to generate a permutation sequence to permute the pixels
@@ -82,21 +102,8 @@ distribute(char *file_name, BYTE *image, int image_size, BMPImage *shadow_images
     BYTE **shadows = createShadows(E, image_size, n, k);
     
     for (int i = 0; i < n; i++) {
-        hideInformation(shadow_images[i], shadows[i], image_size/k, err);
+//        hideInformation(shadow_images[i], shadows[i], image_size/k, err);
     }
-    printf("We now save the images with the hidden data\n");
-    for (int i = 0; i < n; i++) {
-        io_error error = NULL;
-        BMPImage image = shadow_images[i];
-        setIndex(image, i);
-        setSeed(image, seed);
-        saveImage(image, PORTERS_DIRECTORY, &error);
-        if (error != NULL) {
-            printf("error: %s\n", error);
-            return;
-        }
-    }
-    printf("We are done here\n");
 }
 
 BYTE*
@@ -168,7 +175,6 @@ evaluateSection(BYTE* section, BYTE** shadows, int shadow_pixel_index, int n, in
 /*
  * This method assumes that image_size/k is an integer
  */
-
 BYTE **
 initializeShadows(int image_size, int n, int k) {
     BYTE** shadows = calloc(n, sizeof(BYTE *)); // aka unsigned char*
@@ -181,9 +187,7 @@ initializeShadows(int image_size, int n, int k) {
 }
 
 void
-hideInformation(BMPImage shadowImage, BYTE *toHide, int size_to_hide, main_error *err) {
-    BYTE *shadowImage_bytes = getBMPImage(shadowImage);
-    int shadow_size = getImageSize(shadowImage);
+hideInformation(BYTE *shadowImage_bytes, BYTE *toHide, int size_to_hide, main_error *err) {
     int bi = 0; // for iterating over shadowImage_bytes
     for (int i = 0; i < size_to_hide; i++) {
         // we iterate over the bytes to hide
