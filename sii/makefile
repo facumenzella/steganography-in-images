@@ -10,6 +10,7 @@ ERRORS = src/errors/errors.c
 IMAGES = src/image/*
 ARGUMENTS = src/arguments/*
 DISTRIBUTION = src/distribution.c
+REVEAL = src/reveal.c
 SII = sii.c
 SII_EXE = sii
 
@@ -27,10 +28,10 @@ clean:
 # sii
 # gcc src/byte/byte.c src/math.c src/random/random.c src/free.c src/errors/errors.c src/image/image* src/arguments/* src/distribution.c sii.c -o sii
 sii: 
-	@gcc $(BYTE) $(MATH) $(RANDOM) $(FREE) $(ERRORS) $(IMAGES) $(ARGUMENTS) $(DISTRIBUTION) $(SII) -o sii 
+	@gcc $(BYTE) $(MATH) $(RANDOM) $(FREE) $(ERRORS) $(IMAGES) $(ARGUMENTS) $(DISTRIBUTION) $(REVEAL) $(SII) -o sii 
 	@echo "Remember the arguments"
 	@echo "TODO add arguments"
 
 # gcc for debugging mode with lldb or gdb
 gcc:
-	@gcc -g $(BYTE) $(MATH) $(RANDOM) $(FREE) $(ERRORS) $(IMAGES) $(ARGUMENTS) $(DISTRIBUTION) $(SII) -o sii 
+	@gcc -g $(BYTE) $(MATH) $(RANDOM) $(FREE) $(ERRORS) $(IMAGES) $(ARGUMENTS) $(DISTRIBUTION) $(REAVEAL) $(SII) -o sii 

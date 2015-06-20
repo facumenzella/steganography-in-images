@@ -48,8 +48,8 @@ distribute(char *file_name, BYTE *image, int image_size, char* directory, int n,
     /* step 1 - Use a key to generate a permutation sequence to permute the pixels
      of the secret image.
      */
-    randomize(seed);
-    permutePixels(n, image);
+//    randomize(seed);
+//    shufflePixels(n, image);
     
     /* step 2 - Sequentially read in gray values of D* and then store in E according to the rule below.
      For each read-in gray value pi of D* :
@@ -64,7 +64,7 @@ distribute(char *file_name, BYTE *image, int image_size, char* directory, int n,
         printf("%s\n", *err);
         return; // we fucked up.
     }
-    printf("We have loaded the %d shadows\n", n);
+    printf("We have loaded the %d porters\n", n);
     // we are cool, so we continue
     BYTE **shadows = createShadows(E, image_size, n, k);
     
@@ -77,7 +77,7 @@ distribute(char *file_name, BYTE *image, int image_size, char* directory, int n,
         BMPImage image = shadowImages[i];
         setIndex(image, i);
         setSeed(image, seed);
-        saveImage(image, PORTERS_DIRECTORY, &error);
+        saveImage(image, directory, &error);
         if (error != NULL) {
             printf("error: %s\n", error);
             return;
@@ -121,7 +121,7 @@ createShadows(BYTE* image, int image_size, int n, int k) {
 	int shadow_pixel_index = 0;
 	// step 3 - Sequentially, take r not-shared-yet elements of the array E to form an r-pixel section.
 	BYTE* section = calloc(k, sizeof(BYTE));
-    printf("Creating shadows from size: %d\n with k: %d\n", image_size, k);
+    printf("Creating %d, shadows from size: %d\n with k: %d\n", n, image_size / k, k);
 	BYTE** shadows = initializeShadows(image_size, n, k);
 	int i;
     printf("Shadows initialized\n");
@@ -176,9 +176,10 @@ hideInformation(BMPImage shadowImage, BYTE *toHide, int size_to_hide, main_error
         BYTE byte_toHide = toHide[i];
         for (int j = 7; j >= 0; j--) {
             // we iterate over the bits of the byte to hide
-            int bit = getBit(byte_toHide, j);
+            uint8_t bit = getBit(byte_toHide, j);
             BYTE shadowImage_byte = shadowImage_bytes[bi];
-            shadowImage_bytes[bi++] = overrideLessSignificantBit(shadowImage_byte, bit);
+            BYTE porter_byte = overrideLessSignificantBit(shadowImage_byte, bit);
+            memcpy(&shadowImage_bytes[bi++], &porter_byte, sizeof(BYTE));
         }
     }
 }
