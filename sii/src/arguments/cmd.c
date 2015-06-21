@@ -73,7 +73,7 @@ validateArguments(int argc, char *argv[], arguments_error *error) {
     
     if (nWasProvided == FALSE) {
         // we need to count the amount of shadows from the directory
-        printf("N was not provided, so we will take the number of bmp images in the directory\n");
+        printf("\tN was not provided, so we will take the number of bmp images in the directory\n");
         setTotalAmountOfShadowsToDistributeSecret(arguments,
                                                   countImagesInDirectory(getDirectory(arguments), error));
     }
@@ -100,7 +100,7 @@ validateModeType(char *arg, arguments_error *error) {
     } else {
         setError(error, MODE_ARG_ERROR);
     }
-    printf("Mode: %s\n", MODE(arg));
+    printf("\tMode: %s\n", MODE(arg));
     return mode;
 }
 
@@ -110,7 +110,7 @@ validateSecret(char *arg, char *value, arguments_error *error) {
     if(strcmp(arg, S_SECRET_ARG) == 0 || strcmp(arg, SECRET_ARG) == 0) {
         s = calloc(SECRET_MAX_LENGTH, sizeof(char));
         strcpy(s, value);
-        printf("Secret: %s\n", s);
+        printf("\tSecret: %s\n", s);
     } else {
         setError(error, SECRET_ARG_ERROR);
     }
@@ -123,7 +123,7 @@ validateMinShadowsToRecoverSecret(char *arg, char*value, arguments_error *error)
     if(strcmp(arg, S_K_ARG) == 0 || strcmp(arg, K_ARG) == 0) {
         s = calloc(K_MAX_LENGTH, sizeof(char));
         strcpy(s, value);
-        printf("Min shadows: %s\n", s);
+        printf("\tMin shadows: %s\n", s);
     } else {
         setError(error, K_ARG_ERROR);
         return -1;
@@ -149,7 +149,7 @@ validateTotalAmountOfShadowsToDistributeSecret(char *totalAmount, char *totalSha
     // there is no validation because we have already validated
     char *s = calloc(N_MAX_LENGTH, sizeof(char));
     strcpy(s, totalShadows);
-    printf("Total shadows: %s\n", s);
+    printf("\tTotal shadows: %s\n", s);
     int n = -1;
     if ( (n = atoi(s)) < 2) {
         setError(error, N_LOWER_THAN_2);

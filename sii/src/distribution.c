@@ -81,6 +81,7 @@ isValidKAgainstImageSize(const int k, const int image_size) {
 
 boolean
 isPorterMaterial(const int shadow_size, const int porter_image_size) {
+//    printf ("shadow_size: %d\n", shadow_size);
     if (8 * shadow_size == porter_image_size) {
         return TRUE;
     }
@@ -222,12 +223,12 @@ hideInformation(BYTE *shadowImage_bytes, BYTE *toHide, int size_to_hide, main_er
         for (int j = 7; j >= 0; j--) {
             // we iterate over the bits of the byte to hide
             uint8_t bit = getBit(byte_toHide, j);
-            //            printf("bit to hide: %d\n", bit);
+//                        printf("bit to hide: %d\n", bit);
             BYTE shadowImage_byte = shadowImage_bytes[bi];
-            //            printf("porter byte: "); int2bin(shadowImage_byte); printf("\n");
+//                        printf("porter byte: "); int2bin(shadowImage_byte); printf("\n");
             BYTE porter_byte = overrideLessSignificantBit(shadowImage_byte, bit);
             memcpy(&shadowImage_bytes[bi], &porter_byte, sizeof(BYTE));
-            //            printf("porter byte modified: "); int2bin(shadowImage_bytes[bi]); printf("\n");
+//                        printf("porter byte modified: "); int2bin(shadowImage_bytes[bi]); printf("\n");
             bi++;
         }
     }

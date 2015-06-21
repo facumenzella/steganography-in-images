@@ -26,6 +26,17 @@ void freeWhatNeedsToBeFree(BYTE *header, BYTE *image, FILE *file);
 boolean isDir(char *path);
 boolean isBMP(char * path);
 
+//int
+//main(int argc, char * argv[]) {
+//    
+//    io_error err;
+//    printf("loading\n");
+//    BMPImage image = loadImage("/Users/fmenzella/Desktop/Facundo/ITBA/CRIPTO/tp/lena/lena512.bmp", &err);
+//    printf("saving: %s\n", getFilename(image));
+//    saveImage(image, "./", &err);
+//    
+//}
+
 BMPImage
 loadImage(char *path, io_error *err) {
 //    printf("Trying to open:%s\n", path);
@@ -141,7 +152,7 @@ loadImages(char *dir, int n, io_error *err) {
             // its a file not a directory
             if (isBMP(fullPath)) {
                 BMPImage shadowImage = loadImage(fullPath, err);
-                //                printf("\topening %s \n", getFilename(shadowImage));
+//                                printf("\topening %s \n", getFilename(shadowImage));
                 
                 if (*err != NULL) {
                     closedir(pwd);

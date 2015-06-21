@@ -10,14 +10,13 @@ void eliminateValues(int** equation, int** inverse, int dimension, int pivot, in
 BYTE* revealPartialImageWithoutLoss(BYTE* partial_image, int partial_image_size, int* permuted_image_size);
 BYTE* revealPartialImageWithLoss(BYTE* partial_image, int partial_image_size);
 
-void int2bin(int number);
-
 void
 runReveal(Arguments arguments, main_error *err) {
     char *file_name = getSecret(arguments);
     
     char *directory = getDirectory(arguments);
     int min__porters_to_get_secret = getMinShadowsToRecoverSecret(arguments);
+//    printf("min: %d\n", min__porters_to_get_secret);
     printf(STARTING_REVEAL_PROCESS, min__porters_to_get_secret, directory);
     
     int *indexes = calloc(min__porters_to_get_secret, sizeof(int));
@@ -29,12 +28,13 @@ runReveal(Arguments arguments, main_error *err) {
     if (porters_full_images == NULL) {
         return;
     }
+//    printf("Fetching shadows\n");
     BYTE **porter_images_shadows = calloc(min__porters_to_get_secret, sizeof(BYTE*));
     if (porter_images_shadows == NULL) {
         setError(err, CALLOC_ERROR);
     }
     
-    int shadow_size = getImageSize(porters_full_images[0]) / min__porters_to_get_secret;
+    int shadow_size = getImageSize(porters_full_images[0]) / 8;
     
     porter_images_shadows[0] = revealInformation(porters_full_images[0],
                                                  shadow_size,
@@ -49,6 +49,7 @@ runReveal(Arguments arguments, main_error *err) {
             setError(err, DIFFERENT_SEEDS_FOR_PORTERS);
             return;
         }
+//        printf("revealing %d \n", i);
         porter_images_shadows[i] = revealInformation(porters_full_images[i],
                                                      shadow_size,
                                                      err);
@@ -60,13 +61,14 @@ runReveal(Arguments arguments, main_error *err) {
                               shadow_size,
                               seed);
     io_error error = NULL;
+//    printf("done revealing\n");
     BMPImage revealed_secret = initBMPImage("output.bmp",
                                             getFilesize(porters_full_images[0]),
                                             getOffset(porters_full_images[0]),
                                             getImageSize(porters_full_images[0]),
                                             getHeader(porters_full_images[0]),
-                                            -1,
-                                            -1,
+                                            0,
+                                            0,
                                             image,
                                             &error);
     if (revealed_secret == NULL) {
@@ -104,7 +106,7 @@ revealImage(int* n_values, int n_size, int k, BYTE** shadows_pixels, int shadow_
         partial_image_index += l;
         setValuesToByteMatrix(shadows_i_pixels, n_size, 0, 0);
     }
-    printf("seed %d\n", seed);
+//    printf("seed %d\n", seed);
     randomize(seed);
     unshufflePixels(image_size, partial_image);
     return partial_image;
@@ -185,11 +187,8 @@ revealInformation(BMPImage shadowImage, int size_to_reveal, main_error *err) {
         for (int i = 0; i < 8; i++) {
             revealed_byte = revealed_byte << 1;
             BYTE byte_to_reveal = shadow_image_bytes[j];
-            //            printf("byte to reveal: "); int2bin(byte_to_reveal); printf("\n");
             uint8_t bit = getBit(byte_to_reveal, 0);
-            //            printf("bit%d: %d\n", i, bit);
             revealed_byte = overrideLessSignificantBit(revealed_byte, bit);
-            //            printf("revealed byte: "); int2bin(revealed_byte); printf("\n");
             j++;
         }
         memcpy(&revealed_shadow[bi], &revealed_byte, sizeof(BYTE));
