@@ -4,11 +4,18 @@
 ## Criptography & security ##
 ### ITBA ###
 
+Try running 'make help' if it is your first time.
+If you do not remember the arguments, run 'make arguments'.
+
 You may be wondering...how do I run this amazing app?
 Well, it's easy.
 
 ```
-/sii -d -s ../lena/lena512.bmp -k 8 -n 8 -dir ../porters/i
+Distribution mode example:
+./sii -d -s ../lena/lena512.bmp -k 8 -n 8 -dir ../porters/
+
+Recover mode example:
+./sii -r -s ../output/ -k 8 -dir ../porters/
  
  -d,--distribute                Distribute a source image into other shadow images
  -dir,--directory <DIRECTORY>   Either he directory where the images where the secret will be
