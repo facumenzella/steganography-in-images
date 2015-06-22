@@ -9,7 +9,7 @@ void eliminateValuesAtColumn(int** equation, int** inverse, int dimension, int p
 void eliminateValues(int** equation, int** inverse, int dimension, int pivot, int direction);
 BYTE* revealPartialImageWithoutLoss(BYTE* partial_image, int partial_image_size, int* permuted_image_size);
 BYTE* revealPartialImageWithLoss(BYTE* partial_image, int partial_image_size);
-boolean isPorterMaterial(const int porter_image_size);
+boolean isPorterMaterial2(const int porter_image_size);
 
 static const char* NOT_PORTER_MATERIAL = "Porter images should be divisible by 8. Read the requisites please and thank you.";
 
@@ -37,7 +37,7 @@ runReveal(Arguments arguments, main_error *err) {
         setError(err, CALLOC_ERROR);
     }
 
-    if (getImageSize(porters_full_images[0]) == FALSE) {
+    if (isPorterMaterial2(getImageSize(porters_full_images[0])) == FALSE) {
       setError(err, NOT_PORTER_MATERIAL);
       return;
     }
@@ -58,7 +58,7 @@ runReveal(Arguments arguments, main_error *err) {
             return;
         }
 //        printf("revealing %d \n", i);
-        if (getImageSize(porters_full_images[i]) == FALSE) {
+        if (isPorterMaterial2(getImageSize(porters_full_images[i])) == FALSE) {
             setError(err, NOT_PORTER_MATERIAL);
             return;
         }
@@ -74,10 +74,15 @@ runReveal(Arguments arguments, main_error *err) {
                               seed);
     io_error error = NULL;
 //    printf("done revealing\n");
+
+
+    // this works because we said that images must be square images (aka widht = height)
+    const int size_rate = 8 / min__porters_to_get_secret;
+
     BMPImage revealed_secret = initBMPImage("output.bmp",
                                             getFilesize(porters_full_images[0]),
                                             getOffset(porters_full_images[0]),
-                                            getImageSize(porters_full_images[0]),
+                                            getImageSize(porters_full_images[0]) / size_rate,
                                             getHeader(porters_full_images[0]),
                                             0,
                                             0,
@@ -88,7 +93,7 @@ runReveal(Arguments arguments, main_error *err) {
     }
 
     io_error save = NULL;
-    saveImage(revealed_secret, file_name, &save);
+    saveImage(revealed_secret, file_name, size_rate, &save);
     if (save != NULL) {
         return;
     }
@@ -191,7 +196,7 @@ revealPartialImageWithoutLoss(BYTE* partial_image, int partial_image_size, int* 
 // Kill this with fire. This function is also defined in distribution.c but time is running
 // and we have to finish this quickly
 boolean
-isPorterMaterial(const int porter_image_size) {
+isPorterMaterial2(const int porter_image_size) {
 //    printf ("shadow_size: %d\n", shadow_size);
     if (porter_image_size % 8 == 0) {
         return TRUE;

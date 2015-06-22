@@ -15,7 +15,7 @@ static const char *COULD_NOT_OPEN_DIR_ERROR = "We could not open the directory y
 BMPImage loadImage(char *path, io_error *err);
 BMPImage* loadImages(char *dir, int n, io_error *err);
 int countImagesInDirectory(char *dir, io_error *err);
-void saveImage(BMPImage image, char const *path, io_error *error);
+void saveImage(BMPImage image, char const *path, int rate, io_error *error);
 
 typedef struct dirent *NEXT_DIR;
 //struct dirent

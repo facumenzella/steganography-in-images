@@ -62,7 +62,9 @@ runDistribution(Arguments arguments, main_error *err) {
         BMPImage image = porter_full_images[i];
         setIndex(image, i+1); // this is really important because the reveal expects indexes between [1,2, ..., n]
         setSeed(image, seed);
-        saveImage(image, PORTERS_DIRECTORY, &error);
+        // we do not care about that fixed 1, its just for teh final image
+        // we do not like that is there, but clock is ticking
+        saveImage(image, PORTERS_DIRECTORY, 1, &error);
         if (error != NULL) {
             setError(err, error);
             return;

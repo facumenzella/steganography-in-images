@@ -23,7 +23,7 @@ initBMPImage(char *filename, int fileSize, int offset, int imageSize, BYTE *head
     //seed and porter
     imageStruct->seed = seed;
     imageStruct->n = porter;
-    
+
   // We reserve space for the filename
 	imageStruct->filename = calloc(strlen(filename) + 1, sizeof(BYTE));
 	if (imageStruct->filename == NULL) {

@@ -8,20 +8,20 @@ void handleErrorIfNeeded(char *error);
 
 int
 main(int argc, char * argv[]) {
-        
+
     arguments_error error;
     Arguments arguments = validateArguments(argc, argv, &error);
-    
+
     handleErrorIfNeeded((char*)error);
-    
+
     main_error err = NULL;
     switch (getMode(arguments)) {
         case DISTRIBUTE:
-            printf("%s\n", DISTRIBUTE_WELCOME_MSG);
+            // printf("%s\n", DISTRIBUTE_WELCOME_MSG);
             runDistribution(arguments, &err);
             break;
         case RECOVER:
-            printf("%s\n", RECOVER_WELCOME_MSG);
+            // printf("%s\n", RECOVER_WELCOME_MSG);
             runReveal(arguments, &err);
             break;
     }

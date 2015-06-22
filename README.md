@@ -4,6 +4,8 @@
 ## Criptography & security ##
 ### ITBA ###
 
+The document explaining our work it's inside the doc folder, you might want to check it out first.
+
 Try running 'make help' if it is your first time.
 If you do not remember the arguments, run 'make arguments'.
 
